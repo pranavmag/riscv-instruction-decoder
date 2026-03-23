@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="riscv-instruction-decoder.vcxproj" Id="ee872f3a-57a8-4ab5-87f0-fb79269c9de3" />
+</Solution>
