@@ -22,38 +22,38 @@ int main() {
 
 		DecodedInstruction inst = decodeInstruction(value);
 
-		if (inst.type == TYPE_I) {
-			std::cout << inst.name << " x" << inst.rd << ", x" << inst.rs1 << ", " << inst.imm << '\n';
+		if (inst.type == InstructionType::I) {
+			std::cout << instructionToString(inst.name) << " x" << inst.rd << ", x" << inst.rs1 << ", " << inst.imm << '\n';
 		}
-		else if (inst.type == TYPE_SHIFT) {
-			std::cout << inst.name << " x" << inst.rd << ", x" << inst.rs1 << ", " << inst.shamt << '\n';
+		else if (inst.type == InstructionType::SHIFT) {
+			std::cout << instructionToString(inst.name) << " x" << inst.rd << ", x" << inst.rs1 << ", " << inst.shamt << '\n';
 		}
-		else if (inst.type == TYPE_R) {
-			std::cout << inst.name << " x" << inst.rd << ", x" << inst.rs1 << ", " << inst.rs2 << '\n';
+		else if (inst.type == InstructionType::R) {
+			std::cout << instructionToString(inst.name) << " x" << inst.rd << ", x" << inst.rs1 << ", " << inst.rs2 << '\n';
 		}
-		else if (inst.type == TYPE_S) {
-			std::cout << inst.name << " x" << inst.rs2 << ", " << inst.imm << "(x" << inst.rs1 << ")" << '\n';
+		else if (inst.type == InstructionType::S) {
+			std::cout << instructionToString(inst.name) << " x" << inst.rs2 << ", " << inst.imm << "(x" << inst.rs1 << ")" << '\n';
 		}
-		else if (inst.type == TYPE_B) {
-			std::cout << inst.name << " x" << inst.rs1 << ", x" << inst.rs2 << ", " << inst.imm << '\n';
+		else if (inst.type == InstructionType::B) {
+			std::cout << instructionToString(inst.name) << " x" << inst.rs1 << ", x" << inst.rs2 << ", " << inst.imm << '\n';
 		}
-		else if (inst.type == TYPE_J) {
-			std::cout << inst.name << " x" << inst.rd << ", " << inst.imm << '\n';
+		else if (inst.type == InstructionType::J) {
+			std::cout << instructionToString(inst.name) << " x" << inst.rd << ", " << inst.imm << '\n';
 		}
-		else if (inst.type == TYPE_U) {
-			std::cout << inst.name << " x" << inst.rd << ", " << inst.imm << '\n';
+		else if (inst.type == InstructionType::U) {
+			std::cout << instructionToString(inst.name) << " x" << inst.rd << ", " << inst.imm << '\n';
 		}
-		else if (inst.type == TYPE_LOAD) {
-			std::cout << inst.name << " x" << inst.rd << ", " << inst.imm << "(x" << inst.rs1 << ")" << '\n';
+		else if (inst.type == InstructionType::LOAD) {
+			std::cout << instructionToString(inst.name) << " x" << inst.rd << ", " << inst.imm << "(x" << inst.rs1 << ")" << '\n';
 		}
-		else if (inst.type == TYPE_JALR) {
-			std::cout << inst.name << " x" << inst.rd << ", x" << inst.rs1 << ", " << inst.imm << '\n';
+		else if (inst.type == InstructionType::JALR) {
+			std::cout << instructionToString(inst.name) << " x" << inst.rd << ", x" << inst.rs1 << ", " << inst.imm << '\n';
 		}
-		else if (inst.type == TYPE_ENVIRONMENT) {
-			std::cout << inst.name << '\n';
+		else if (inst.type == InstructionType::ENVIRONMENT) {
+			std::cout << instructionToString(inst.name) << '\n';
 		}
 		else {
-			std::cout << inst.type << '\n';
+			std::cout << instructionToString(inst.name) << '\n';
 		}
 	
 	}

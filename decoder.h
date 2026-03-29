@@ -3,19 +3,39 @@
 #include <string>
 #include <cstdint>
 
-inline const std::string TYPE_I = "I";
-inline const std::string TYPE_R = "R";
-inline const std::string TYPE_S = "S";
-inline const std::string TYPE_SHIFT = "SHIFT";
-inline const std::string TYPE_B = "B";
-inline const std::string TYPE_J = "J";
-inline const std::string TYPE_U = "U";
-inline const std::string TYPE_LOAD = "LOAD";
-inline const std::string TYPE_JALR = "JALR";
-inline const std::string TYPE_ENVIRONMENT = "ENVIRONMENT";
+enum class InstructionType {
+	I, R, S, SHIFT, B, J, U, LOAD, JALR, ENVIRONMENT, UNKNOWN
+};
+
+enum class Instruction {
+    // I-type
+    ADDI, ANDI, ORI, XORI, SLTI, SLTIU,
+    // Shifts
+    SLLI, SRLI, SRAI,
+    // R-type
+    ADD, SUB, AND, OR, XOR, SLL, SRL, SRA, SLT, SLTU,
+    // S-type
+    SB, SH, SW,
+    // B-type
+    BEQ, BNE, BLT, BGE, BLTU, BGEU,
+    // J-type
+    JAL,
+    // U-type
+    LUI, AUIPC,
+    // Loads
+    LB, LH, LW, LBU, LHU,
+    // JALR
+    JALR,
+    // Environment
+    ECALL, EBREAK,
+    // Unknown
+    UNKNOWN
+};
+
+std::string instructionToString(Instruction);
 
 struct DecodedInstruction {
-	std::string name; // exact instruction: addi, slli, srai
+	Instruction name; // exact instruction: addi, slli, srai
 
 	uint32_t rd{};
 	uint32_t rs1{};
@@ -24,7 +44,7 @@ struct DecodedInstruction {
 	int32_t imm{};
 	uint32_t shamt{};
 
-	std::string type;
+	InstructionType type;
 };
 
 DecodedInstruction decodeInstruction(uint32_t);
