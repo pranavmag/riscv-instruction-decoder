@@ -48,6 +48,9 @@ void Memory::writeWord(uint32_t addr, uint32_t value) {
 }
 
 void Core::execute(const DecodedInstruction& inst, Memory& mem) {
+	uint32_t old_pc = pc;
+	pc += 4;
+
 	switch (inst.name) {
 	case Instruction::ADDI: {
 		writeReg(inst.rd, readReg(inst.rs1) + inst.imm);
@@ -131,65 +134,47 @@ void Core::execute(const DecodedInstruction& inst, Memory& mem) {
 	}
 	case Instruction::BEQ: {
 		if (readReg(inst.rs1) == readReg(inst.rs2)) {
-			pc = pc + inst.imm;
-		}
-		else {
-			pc = pc + 4;
+			pc = old_pc + inst.imm;
 		}
 		break;
 	}
 	case Instruction::BNE: {
 		if (readReg(inst.rs1) != readReg(inst.rs2)) {
-			pc = pc + inst.imm;
-		}
-		else {
-			pc = pc + 4;
+			pc = old_pc + inst.imm;
 		}
 		break;
 	}
 	case Instruction::BLT: {
 		if (static_cast<int32_t>(readReg(inst.rs1)) < static_cast<int32_t>(readReg(inst.rs2))) {
-			pc = pc + inst.imm;
-		}
-		else {
-			pc = pc + 4;
+			pc = old_pc + inst.imm;
 		}
 		break;
 	}
 	case Instruction::BLTU: {
 		if (readReg(inst.rs1) < readReg(inst.rs2)) {
-			pc = pc + inst.imm;
-		}
-		else {
-			pc = pc + 4;
+			pc = old_pc + inst.imm;
 		}
 		break;
 	}
 	case Instruction::BGE: {
 		if (static_cast<int32_t>(readReg(inst.rs1)) >= static_cast<int32_t>(readReg(inst.rs2))) {
-			pc = pc + inst.imm;
-		}
-		else {
-			pc = pc + 4;
+			pc = old_pc + inst.imm;
 		}
 		break;
 	}
 	case Instruction::BGEU: {
 		if (readReg(inst.rs1) >= readReg(inst.rs2)) {
-			pc = pc + inst.imm;
-		}
-		else {
-			pc = pc + 4;
+			pc = old_pc + inst.imm;
 		}
 		break;
 	}
 	case Instruction::JAL: {
-		writeReg(inst.rd, pc + 4);
-		pc = pc + inst.imm;
+		writeReg(inst.rd, old_pc + 4);
+		pc = old_pc + inst.imm;
 		break;
 	}
 	case Instruction::JALR: {
-		writeReg(inst.rd, pc + 4);
+		writeReg(inst.rd, old_pc + 4);
 		pc = (readReg(inst.rs1) + inst.imm) & 0xFFFFFFFE;
 		break;
 	}
@@ -225,7 +210,54 @@ void Core::execute(const DecodedInstruction& inst, Memory& mem) {
 		writeReg(inst.rd, memory);
 		break;
 	}
+	case Instruction::SB: {
+		uint32_t address = readReg(inst.rs1) + inst.imm;
+		uint32_t value = readReg(inst.rs2);
+		mem.writeByte(address, value);
+		break;
+	}
+	case Instruction::SH: {
+		uint32_t address = readReg(inst.rs1) + inst.imm;
+		uint32_t value = readReg(inst.rs2);
+		mem.writeHalfWord(address, value);
+		break;
+	}
+	case Instruction::SW: {
+		uint32_t address = readReg(inst.rs1) + inst.imm;
+		uint32_t value = readReg(inst.rs2);
+		mem.writeWord(address, value);
+		break;
+	}
+	case Instruction::AUIPC: {
+		uint32_t upperImmediate = old_pc + inst.imm;
+		writeReg(inst.rd, upperImmediate);
+		break;
+	}
+	case Instruction::LUI: {
+		uint32_t upperImmediate = inst.imm;
+		writeReg(inst.rd, upperImmediate);
+		break;
+	}
+	case Instruction::EBREAK: {
+		halted = true;
+		break;
+	}
+	case Instruction::ECALL: {
+		halted = true;
+		break;
+	}
+	case Instruction::UNKNOWN: {
+		std::cout << "Unknown Instruction at PC: " << pc << '\n';
+		halted = true;
+		break;
+	}
+	}
+}
 
-
+void Core::run(Memory& mem) {
+	while (!halted) {
+		uint32_t rawInstruction = mem.readWord(pc);
+		DecodedInstruction inst = decodeInstruction(rawInstruction);
+		execute(inst, mem);
 	}
 }

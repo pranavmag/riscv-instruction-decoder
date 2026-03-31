@@ -7,7 +7,11 @@
 #include <cstdint>
 
 struct Memory {
-	std::array<uint8_t, 65536> memory;
+	std::vector<uint8_t> memory;
+
+	Memory() {
+		memory.resize(65536, 0);
+	}
 
 	uint32_t readByte(uint32_t addr);
 
@@ -23,13 +27,17 @@ struct Memory {
 };
 
 struct Core {
-	std::array<uint32_t, 32> registers;
-	uint32_t pc;
-	uint32_t core_id;
+	std::array<uint32_t, 32> registers{};
+	uint32_t pc{ };
+	uint32_t core_id{ };
 
 	void writeReg(int regNum, uint32_t value);
 
 	uint32_t readReg(int regNum);
 
 	void execute(const DecodedInstruction& inst, Memory& mem);
+
+	bool halted{ false };
+
+	void run(Memory& mem);
 };
