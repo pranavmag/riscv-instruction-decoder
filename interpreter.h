@@ -3,7 +3,7 @@
 #include "decoder.h"
 #include <vector>
 #include <array>
-#include <iostream>
+#include <string>
 #include <cstdint>
 
 struct Memory {
@@ -24,6 +24,8 @@ struct Memory {
 	void writeHalfWord(uint32_t addr, uint32_t value);
 
 	void writeWord(uint32_t addr, uint32_t value);
+
+	void loadProgram(const std::string& fileName);
 };
 
 struct Core {

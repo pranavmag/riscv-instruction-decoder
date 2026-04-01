@@ -35,7 +35,7 @@ enum class Instruction {
 std::string instructionToString(Instruction);
 
 struct DecodedInstruction {
-	Instruction name; // exact instruction: addi, slli, srai
+    Instruction name{ Instruction::UNKNOWN }; // exact instruction: addi, slli, srai
 
 	uint32_t rd{};
 	uint32_t rs1{};
@@ -44,7 +44,7 @@ struct DecodedInstruction {
 	int32_t imm{};
 	uint32_t shamt{};
 
-	InstructionType type;
+    InstructionType type{ InstructionType::UNKNOWN };
 };
 
 DecodedInstruction decodeInstruction(uint32_t);

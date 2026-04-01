@@ -4,6 +4,21 @@
 #include <array>
 #include <iostream>
 #include <cstdint>
+#include <fstream>
+
+void Memory::loadProgram(const std::string& fileName) {
+
+	std::ifstream istrm(fileName, std::ios::binary);
+	if (!istrm.is_open()) {
+		std::cout << "failed to open " << fileName << '\n';
+	}
+	else {
+		istrm.seekg(0, std::ios::end);
+		size_t fileSize = istrm.tellg();
+		istrm.seekg(0, std::ios::beg);
+		istrm.read(reinterpret_cast<char*>(memory.data()), fileSize);
+	}
+}
 
 void Core::writeReg(int regNum, uint32_t value) {
 	if (regNum != 0) {

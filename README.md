@@ -1,9 +1,5 @@
 # riscv-instruction-emulator
 
-\# RISC-V Emulator
-
-
-
 A RISC-V emulator built from scratch in C++ as a learning project alongside
 
 studying Computer Architecture, Operating Systems, and Systems Programming.
@@ -37,23 +33,21 @@ g++ main.cpp decoder.cpp interpreter.cpp -o riscv-emulator
 ```
 
 
-
-\## Roadmap
-
-\- \[x] Complete instruction decoder (input 32-bit binary string)
-
-\- \[ ] Complete instruction execution (branches, loads, stores, jumps)
-
-\- \[ ] Program counter and fetch-decode-execute loop
-
-\- \[ ] Memory simulation
-
-\- \[ ] Load and run RISC-V binary programs
-
-\- \[ ] Multi-core simulation (future)
-
-\- \[ ] Virtual memory (future)
-
+## Roadmap
+- [x] Complete instruction decoder (input 32-bit binary string)
+- [x] Complete instruction execution (branches, loads, stores, jumps)
+- [x] Program counter and fetch-decode-execute loop
+- [x] Memory simulation (byte-addressed, read/write byte/halfword/word)
+- [x] Load and run RISC-V binary programs (.bin file loading)
+- [x] Disassembler mode (decode and print instructions)
+- [x] Manual input interpreter mode
+- [ ] Run a non-trivial program (Fibonacci)
+- [ ] RISC-V toolchain integration (compile and run real programs)
+- [ ] ELF file loading (future)
+- [ ] Multi-core simulation (future)
+- [ ] Virtual memory / MMU (future)
+- [ ] Interrupt and trap handling (future)
+- [ ] CSR (Control and Status Registers) (future)
 
 
 \## Learning Journey

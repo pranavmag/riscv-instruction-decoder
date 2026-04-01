@@ -15,7 +15,8 @@ std::string getBinary() {
 int main() {
 	std::cout << "Select mode:\n";
 	std::cout << "1 - Disassembler\n";
-	std::cout << "2 - Interpreter\n";
+	std::cout << "2 - Interpreter (manual-input mode)\n";
+	std::cout << "3 - Interpreter (load .bin file)\n";
 
 	int choice{};
 	std::cin >> choice;
@@ -98,6 +99,23 @@ int main() {
 
 		for (int i{}; i < 32; i++) {
 			std::cout << "x" << i <<  " = " << core.readReg(i) << '\n';
+		}
+	}
+
+	if (choice == 3) {
+		Memory mem;
+		Core core;
+
+		std::cout << "Enter the name of the .bin file (test.bin): ";
+		std::string fileName{};
+		std::getline(std::cin >> std::ws, fileName);
+
+		mem.loadProgram(fileName);
+
+		core.run(mem);
+
+		for (int i{}; i < 32; i++) {
+			std::cout << "x" << i << " = " << core.readReg(i) << '\n';
 		}
 	}
 
