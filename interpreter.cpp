@@ -253,6 +253,74 @@ void Core::execute(const DecodedInstruction& inst, Memory& mem) {
 		writeReg(inst.rd, upperImmediate);
 		break;
 	}
+	case Instruction::MUL: {
+		writeReg(inst.rd, readReg(inst.rs1) * readReg(inst.rs2));
+		break;
+	}
+	case Instruction::MULH: {
+		int64_t result = int64_t((int32_t)readReg(inst.rs1)) * int64_t((int32_t)readReg(inst.rs2));
+		uint32_t upper = result >> 32;
+		writeReg(inst.rd, upper);
+		break;
+	}
+	case Instruction::MULHU: {
+		uint64_t result = uint64_t((uint32_t)readReg(inst.rs1)) * uint64_t((uint32_t)readReg(inst.rs2));
+		uint32_t upper = result >> 32;
+		writeReg(inst.rd, upper);
+		break;
+	}
+	case Instruction::MULHSU: {
+		int64_t result = int64_t((int32_t)readReg(inst.rs1)) * int64_t((uint32_t)readReg(inst.rs2));
+		uint32_t upper = result >> 32;
+		writeReg(inst.rd, upper);
+		break;
+	}
+	case Instruction::DIV: {
+		int32_t dividend = (int32_t)readReg(inst.rs1);
+		int32_t divisor = (int32_t)readReg(inst.rs2);
+		int32_t result{};
+		if (divisor == 0) {
+			result = -1;
+		}
+		else if (dividend == INT32_MIN && divisor == -1) {
+			result = INT32_MIN;
+		}
+		else {
+			result = dividend / divisor;
+		}
+		writeReg(inst.rd, static_cast<uint32_t>(result));
+		break;
+	}
+	case Instruction::DIVU: {
+		uint32_t dividend = readReg(inst.rs1);
+		uint32_t divisor = readReg(inst.rs2);
+		uint32_t result = divisor == 0 ? -1 : (dividend / divisor);
+		writeReg(inst.rd, result);
+		break;
+	}
+	case Instruction::REM: {
+		int32_t dividend = (int32_t)readReg(inst.rs1);
+		int32_t divisor = (int32_t)readReg(inst.rs2);
+		int32_t result{};
+		if (divisor == 0) {
+			result = dividend;
+		}
+		else if (dividend == INT32_MIN && divisor == -1) {
+			result = 0;
+		}
+		else {
+			result = dividend % divisor;
+		}
+		writeReg(inst.rd, static_cast<uint32_t>(result));
+		break;
+	}
+	case Instruction::REMU: {
+		uint32_t dividend = readReg(inst.rs1);
+		uint32_t divisor = readReg(inst.rs2);
+		uint32_t result = divisor == 0 ? dividend : (dividend % divisor);
+		writeReg(inst.rd, result);
+		break;
+	}
 	case Instruction::EBREAK: {
 		halted = true;
 		break;

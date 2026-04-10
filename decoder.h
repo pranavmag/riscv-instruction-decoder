@@ -14,6 +14,7 @@ enum class Instruction {
     SLLI, SRLI, SRAI,
     // R-type
     ADD, SUB, AND, OR, XOR, SLL, SRL, SRA, SLT, SLTU,
+    MUL, MULH, MULHU, MULHSU, DIV, DIVU, REM, REMU,
     // S-type
     SB, SH, SW,
     // B-type

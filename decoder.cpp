@@ -446,6 +446,62 @@ DecodedInstruction decodeInstruction(uint32_t value) {
 		inst.rd = getRd(value);
 		inst.imm = getImm(value);
 	}
+	else if (opcode == 0x33 && funct3 == 0x0 && funct7 == 0x1) {
+		inst.name = Instruction::MUL;
+		inst.type = InstructionType::R;
+		inst.rd = getRd(value);
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+	}
+	else if (opcode == 0x33 && funct3 == 0x1 && funct7 == 0x1) {
+		inst.name = Instruction::MULH;
+		inst.type = InstructionType::R;
+		inst.rd = getRd(value);
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+	}
+	else if (opcode == 0x33 && funct3 == 0x3 && funct7 == 0x1) {
+		inst.name = Instruction::MULHU;
+		inst.type = InstructionType::R;
+		inst.rd = getRd(value);
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+	}
+	else if (opcode == 0x33 && funct3 == 0x2 && funct7 == 0x1) {
+		inst.name = Instruction::MULHSU;
+		inst.type = InstructionType::R;
+		inst.rd = getRd(value);
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+	}
+	else if (opcode == 0x33 && funct3 == 0x4 && funct7 == 0x1) {
+		inst.name = Instruction::DIV;
+		inst.type = InstructionType::R;
+		inst.rd = getRd(value);
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+	}
+	else if (opcode == 0x33 && funct3 == 0x5 && funct7 == 0x1) {
+		inst.name = Instruction::DIVU;
+		inst.type = InstructionType::R;
+		inst.rd = getRd(value);
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+	}
+	else if (opcode == 0x33 && funct3 == 0x6 && funct7 == 0x1) {
+		inst.name = Instruction::REM;
+		inst.type = InstructionType::R;
+		inst.rd = getRd(value);
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+	}
+	else if (opcode == 0x33 && funct3 == 0x7 && funct7 == 0x1) {
+		inst.name = Instruction::REMU;
+		inst.type = InstructionType::R;
+		inst.rd = getRd(value);
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+	}
 	else if (opcode == 0x67 && funct3 == 0x0) {
 		inst.name = Instruction::JALR;
 		inst.type = InstructionType::JALR;
