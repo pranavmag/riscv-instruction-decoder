@@ -26,9 +26,19 @@ void Core::writeReg(int regNum, uint32_t value) {
 	}
 }
 
+void Core::writeFReg(int regNum, float value) {
+	freg[regNum] = value;
+}
+
 uint32_t Core::readReg(int regNum) {
 	return registers[regNum];
 }
+
+float Core::readFReg(int regNum) {
+	return freg[regNum];
+}
+
+
 
 uint32_t Memory::readByte(uint32_t addr) {
 	return memory[addr];
@@ -319,6 +329,21 @@ void Core::execute(const DecodedInstruction& inst, Memory& mem) {
 		uint32_t divisor = readReg(inst.rs2);
 		uint32_t result = divisor == 0 ? dividend : (dividend % divisor);
 		writeReg(inst.rd, result);
+		break;
+	}
+	case Instruction::FLW: {
+		uint32_t memory = mem.readWord(readReg(inst.rs1) + inst.imm);
+		float f{};
+		std::memcpy(&f, &memory, sizeof(f));
+		writeFReg(inst.rd, f);
+		break;
+	}
+	case Instruction::FSW: {
+		uint32_t address = readReg(inst.rs1) + inst.imm;
+		float f = readFReg(inst.rs2);
+		uint32_t value{};
+		std::memcpy(&value, &f, sizeof(value));
+		mem.writeWord(address, value);
 		break;
 	}
 	case Instruction::EBREAK: {

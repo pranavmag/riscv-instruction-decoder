@@ -37,6 +37,14 @@ struct Core {
 
 	uint32_t readReg(int regNum);
 
+
+
+	std::array<float, 32> freg{};
+
+	void writeFReg(int regNum, float value);
+
+	float readFReg(int regNum);
+
 	void execute(const DecodedInstruction& inst, Memory& mem);
 
 	bool halted{ false };

@@ -17,6 +17,7 @@ enum class Instruction {
     MUL, MULH, MULHU, MULHSU, DIV, DIVU, REM, REMU,
     // S-type
     SB, SH, SW,
+    FSW,
     // B-type
     BEQ, BNE, BLT, BGE, BLTU, BGEU,
     // J-type
@@ -25,6 +26,7 @@ enum class Instruction {
     LUI, AUIPC,
     // Loads
     LB, LH, LW, LBU, LHU,
+    FLW,
     // JALR
     JALR,
     // Environment

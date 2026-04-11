@@ -41,7 +41,7 @@ int main() {
 				std::cout << instructionToString(inst.name) << " x" << inst.rd << ", x" << inst.rs1 << ", " << inst.shamt << '\n';
 			}
 			else if (inst.type == InstructionType::R) {
-				std::cout << instructionToString(inst.name) << " x" << inst.rd << ", x" << inst.rs1 << ", " << inst.rs2 << '\n';
+				std::cout << instructionToString(inst.name) << " x" << inst.rd << ", x" << inst.rs1 << ", x" << inst.rs2 << '\n';
 			}
 			else if (inst.type == InstructionType::S) {
 				std::cout << instructionToString(inst.name) << " x" << inst.rs2 << ", " << inst.imm << "(x" << inst.rs1 << ")" << '\n';
@@ -95,12 +95,21 @@ int main() {
 
 		mem.writeWord(addr, 0x100073);
 
+		float testVal = 3.14f;
+		uint32_t raw{};
+		std::memcpy(&raw, &testVal, sizeof(raw));
+		mem.writeWord(100, raw);
 
 		core.run(mem);
 
 		for (int i{}; i < 32; i++) {
 			std::cout << "x" << i <<  " = " << core.readReg(i) << '\n';
 		}
+
+		for (int i{}; i < 32; i++) {
+			std::cout << "f" << i << " = " << core.readFReg(i) << '\n';
+		}
+
 	}
 
 	if (choice == 3) {

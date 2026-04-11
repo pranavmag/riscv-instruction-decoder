@@ -158,6 +158,7 @@ std::string instructionToString(Instruction inst) {
 	case Instruction::SB:     return "sb";
 	case Instruction::SH:     return "sh";
 	case Instruction::SW:     return "sw";
+	case Instruction::FSW:     return "fsw";
 
 		// Loads
 	case Instruction::LB:     return "lb";
@@ -165,6 +166,7 @@ std::string instructionToString(Instruction inst) {
 	case Instruction::LH:     return "lh";
 	case Instruction::LHU:    return "lhu";
 	case Instruction::LW:     return "lw";
+	case Instruction::FLW:     return "flw";
 
 		// Branches
 	case Instruction::BEQ:    return "beq";
@@ -179,6 +181,16 @@ std::string instructionToString(Instruction inst) {
 	case Instruction::JALR:   return "jalr";
 	case Instruction::LUI:    return "lui";
 	case Instruction::AUIPC:  return "auipc";
+
+		// M-Extension (Multiply/Divide)
+	case Instruction::MUL:    return "mul";
+	case Instruction::MULH:   return "mulh";
+	case Instruction::MULHSU: return "mulhsu";
+	case Instruction::MULHU:  return "mulhu";
+	case Instruction::DIV:    return "div";
+	case Instruction::DIVU:   return "divu";
+	case Instruction::REM:    return "rem";
+	case Instruction::REMU:   return "remu";
 
 		// System
 	case Instruction::ECALL:  return "ecall";
@@ -508,6 +520,20 @@ DecodedInstruction decodeInstruction(uint32_t value) {
 		inst.rs1 = getRs1(value);
 		inst.rd = getRd(value);
 		inst.imm = getImm(value);
+	}
+	else if (opcode == 0x7 && funct3 == 0x2) {
+		inst.name = Instruction::FLW;
+		inst.type = InstructionType::LOAD;
+		inst.rs1 = getRs1(value);
+		inst.rd = getRd(value);
+		inst.imm = getImm(value);
+	}
+	else if (opcode == 0x27 && funct3 == 0x2) {
+		inst.name = Instruction::FSW;
+		inst.type = InstructionType::S;
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+		inst.imm = getStoreImm(value);
 	}
 	else if (opcode == 0x73 && funct3 == 0x0) {
 		uint32_t funct12 = (value >> 20) & 0xFFF;
