@@ -4,7 +4,7 @@
 #include <cstdint>
 
 enum class InstructionType {
-	I, R, S, SHIFT, B, J, U, LOAD, JALR, ENVIRONMENT, UNKNOWN
+	I, R, S, SHIFT, B, J, U, LOAD, JALR, FPA, FSQRT, FMINMAX, ENVIRONMENT, UNKNOWN
 };
 
 enum class Instruction {
@@ -29,6 +29,12 @@ enum class Instruction {
     FLW,
     // JALR
     JALR,
+    // FPA
+    FADDS, FMULS, FSUBS, FDIVS,
+    // FSQRT
+    FSQRT,
+    // FMINMAX
+    FMIN, FMAX,
     // Environment
     ECALL, EBREAK,
     // Unknown
@@ -46,6 +52,7 @@ struct DecodedInstruction {
 
 	int32_t imm{};
 	uint32_t shamt{};
+    uint32_t fmt{};
 
     InstructionType type{ InstructionType::UNKNOWN };
 };

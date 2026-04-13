@@ -3,7 +3,9 @@
 #include <vector>
 #include <array>
 #include <iostream>
+#include <algorithm>
 #include <cstdint>
+#include <cmath>
 #include <fstream>
 
 void Memory::loadProgram(const std::string& fileName) {
@@ -37,7 +39,6 @@ uint32_t Core::readReg(int regNum) {
 float Core::readFReg(int regNum) {
 	return freg[regNum];
 }
-
 
 
 uint32_t Memory::readByte(uint32_t addr) {
@@ -344,6 +345,41 @@ void Core::execute(const DecodedInstruction& inst, Memory& mem) {
 		uint32_t value{};
 		std::memcpy(&value, &f, sizeof(value));
 		mem.writeWord(address, value);
+		break;
+	}
+	case::Instruction::FADDS: {
+		writeFReg(inst.rd, readFReg(inst.rs1) + readFReg(inst.rs2));
+		break;
+	}
+	case::Instruction::FMULS: {
+		writeFReg(inst.rd, readFReg(inst.rs1) * readFReg(inst.rs2));
+		break;
+	}
+	case::Instruction::FSUBS: {
+		writeFReg(inst.rd, readFReg(inst.rs1) - readFReg(inst.rs2));
+		break;
+	}
+	case::Instruction::FDIVS: {
+		writeFReg(inst.rd, readFReg(inst.rs1) / readFReg(inst.rs2));
+		break;
+	}
+	case::Instruction::FSQRT: {
+		float value = readFReg(inst.rs1);
+		writeFReg(inst.rd, std::sqrtf(value));
+		break;
+	}
+	case::Instruction::FMIN: {
+		float value1 = readFReg(inst.rs1);
+		float value2 = readFReg(inst.rs2);
+
+		writeFReg(inst.rd, std::fmin(value1, value2));
+		break;
+	}
+	case::Instruction::FMAX: {
+		float value1 = readFReg(inst.rs1);
+		float value2 = readFReg(inst.rs2);
+
+		writeFReg(inst.rd, std::fmax(value1, value2));
 		break;
 	}
 	case Instruction::EBREAK: {

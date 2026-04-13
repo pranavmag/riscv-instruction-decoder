@@ -127,6 +127,18 @@ uint32_t getRs2(uint32_t value) {
 	return rs2;
 }
 
+uint32_t getFunct5(uint32_t value) {
+	uint32_t funct5 = (value >> 27) & 0x1F;
+
+	return funct5;
+}
+
+uint32_t getFmt(uint32_t value) {
+	uint32_t fmt = (value >> 25) & 0x3;
+
+	return fmt;
+}
+
 std::string instructionToString(Instruction inst) {
 	switch (inst) {
 		// Immediate Arithmetic
@@ -192,6 +204,19 @@ std::string instructionToString(Instruction inst) {
 	case Instruction::REM:    return "rem";
 	case Instruction::REMU:   return "remu";
 
+		// FP Arithmetic Instructions
+	case Instruction::FADDS: return "fadd.s";
+	case Instruction::FMULS: return "fmul.s";
+	case Instruction::FSUBS: return "fsub.s";
+	case Instruction::FDIVS: return "fdiv.s";
+
+		// FP Square Root
+	case Instruction::FSQRT: return "fsqrt";
+
+		// FP MIN/MAX
+	case Instruction::FMIN: return "fmin";
+	case Instruction::FMAX: return "fmax";
+
 		// System
 	case Instruction::ECALL:  return "ecall";
 	case Instruction::EBREAK: return "ebreak";
@@ -208,6 +233,7 @@ DecodedInstruction decodeInstruction(uint32_t value) {
 	uint32_t opcode{ getOpCode(value) };
 	uint32_t funct3{ getFunct3(value) };
 	uint32_t funct7{ getFunct7(value) };
+	uint32_t funct5{ getFunct5(value) };
 
 	if (opcode == 0x13 && funct3 == 0x0) {
 		inst.name = Instruction::ADDI;
@@ -534,6 +560,61 @@ DecodedInstruction decodeInstruction(uint32_t value) {
 		inst.rs1 = getRs1(value);
 		inst.rs2 = getRs2(value);
 		inst.imm = getStoreImm(value);
+	}
+	else if (opcode == 0x53 && funct5 == 0x0) {
+		inst.name = Instruction::FADDS;
+		inst.type = InstructionType::FPA;
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+		inst.rd = getRd(value);
+		inst.fmt = getFmt(value);
+	}
+	else if (opcode == 0x53 && funct5 == 0x2) {
+		inst.name = Instruction::FMULS;
+		inst.type = InstructionType::FPA;
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+		inst.rd = getRd(value);
+		inst.fmt = getFmt(value);
+	}
+	else if (opcode == 0x53 && funct5 == 0x1) {
+		inst.name = Instruction::FSUBS;
+		inst.type = InstructionType::FPA;
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+		inst.rd = getRd(value);
+		inst.fmt = getFmt(value);
+	}
+	else if (opcode == 0x53 && funct5 == 0x3) {
+		inst.name = Instruction::FDIVS;
+		inst.type = InstructionType::FPA;
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+		inst.rd = getRd(value);
+		inst.fmt = getFmt(value);
+	}
+	else if (opcode == 0x53 && funct5 == 0xB) {
+		inst.name = Instruction::FSQRT;
+		inst.type = InstructionType::FSQRT;
+		inst.rs1 = getRs1(value);
+		inst.rd = getRd(value);
+		inst.fmt = getFmt(value);
+	}
+	else if (opcode == 0x53 && funct5 == 0x5 && funct3 == 0x0) {
+		inst.name = Instruction::FMIN;
+		inst.type = InstructionType::FMINMAX;
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+		inst.rd = getRd(value);
+		inst.fmt = getFmt(value);
+	}
+	else if (opcode == 0x53 && funct5 == 0x5 && funct3 == 0x1) {
+		inst.name = Instruction::FMAX;
+		inst.type = InstructionType::FMINMAX;
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+		inst.rd = getRd(value);
+		inst.fmt = getFmt(value);
 	}
 	else if (opcode == 0x73 && funct3 == 0x0) {
 		uint32_t funct12 = (value >> 20) & 0xFFF;

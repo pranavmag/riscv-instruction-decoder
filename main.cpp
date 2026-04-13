@@ -64,6 +64,12 @@ int main() {
 			else if (inst.type == InstructionType::ENVIRONMENT) {
 				std::cout << instructionToString(inst.name) << '\n';
 			}
+			else if (inst.type == InstructionType::FPA) {
+				std::cout << instructionToString(inst.name) << " x" << inst.rd << " x" << inst.rs1 << " x" << inst.rs2 << " " << inst.fmt;
+			}
+			else if (inst.type == InstructionType::FSQRT) {
+				std::cout << instructionToString(inst.name) << " x" << inst.rd << " x" << inst.rs1 << " x" << inst.fmt;
+			}
 			else {
 				std::cout << instructionToString(inst.name) << '\n';
 			}
