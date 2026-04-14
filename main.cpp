@@ -64,11 +64,23 @@ int main() {
 			else if (inst.type == InstructionType::ENVIRONMENT) {
 				std::cout << instructionToString(inst.name) << '\n';
 			}
-			else if (inst.type == InstructionType::FPA) {
-				std::cout << instructionToString(inst.name) << " x" << inst.rd << " x" << inst.rs1 << " x" << inst.rs2 << " " << inst.fmt;
+			else if (inst.type == InstructionType::FPL) {
+				std::cout << instructionToString(inst.name) << " f" << inst.rd << ", " << inst.imm << "(x" << inst.rs1 << ")" << '\n';
 			}
-			else if (inst.type == InstructionType::FSQRT) {
-				std::cout << instructionToString(inst.name) << " x" << inst.rd << " x" << inst.rs1 << " x" << inst.fmt;
+			else if (inst.type == InstructionType::FPS) {
+				std::cout << instructionToString(inst.name) << " f" << inst.rs2 << ", " << inst.imm << "(x" << inst.rs1 << ")" << '\n';
+			}
+			else if (inst.type == InstructionType::FPA) {
+				std::cout << instructionToString(inst.name) << " f" << inst.rd << ", f" << inst.rs1 << ", f" << inst.rs2 << '\n';
+			}
+			else if (inst.type == InstructionType::FPR1) {
+				std::cout << instructionToString(inst.name) << " f" << inst.rd << ", f" << inst.rs1 << '\n';
+			}
+			else if (inst.type == InstructionType::FMINMAX) {
+				std::cout << instructionToString(inst.name) << " f" << inst.rd << ", f" << inst.rs1 << ", f" << inst.rs2 << '\n';
+			}
+			else if (inst.type == InstructionType::FPR4) {
+				std::cout << instructionToString(inst.name) << " f" << inst.rd << ", f" << inst.rs1 << ", f" << inst.rs2 << ", f" << inst.rs3 << '\n';
 			}
 			else {
 				std::cout << instructionToString(inst.name) << '\n';

@@ -382,6 +382,50 @@ void Core::execute(const DecodedInstruction& inst, Memory& mem) {
 		writeFReg(inst.rd, std::fmax(value1, value2));
 		break;
 	}
+	case::Instruction::FMADDS: {
+		float rs1 = readFReg(inst.rs1);
+		float rs2 = readFReg(inst.rs2);
+		float rs3 = readFReg(inst.rs3);
+
+		writeFReg(inst.rd, std::fmaf(rs1, rs2, rs3));
+		break;
+	}
+	case::Instruction::FMSUBS: {
+		float rs1 = readFReg(inst.rs1);
+		float rs2 = readFReg(inst.rs2);
+		float rs3 = readFReg(inst.rs3);
+
+		writeFReg(inst.rd, std::fmaf(rs1, rs2, -rs3));
+		break;
+	}
+	case::Instruction::FNMSUBS: {
+		float rs1 = readFReg(inst.rs1);
+		float rs2 = readFReg(inst.rs2);
+		float rs3 = readFReg(inst.rs3);
+
+		writeFReg(inst.rd, std::fmaf(-rs1, rs2, rs3));
+		break;
+	}
+	case::Instruction::FNMADDS: {
+		float rs1 = readFReg(inst.rs1);
+		float rs2 = readFReg(inst.rs2);
+		float rs3 = readFReg(inst.rs3);
+
+		writeFReg(inst.rd, std::fmaf(-rs1, rs2, -rs3));
+		break;
+	}
+	case::Instruction::FCVTWS: {
+		float f = readFReg(inst.rs1);
+		int32_t value = static_cast<int32_t>(f);
+		writeReg(inst.rd, static_cast<uint32_t>(value));
+		break;
+	}
+	case::Instruction::FCVTSW: {
+		int32_t value = readReg(inst.rs1);
+		float f = static_cast<float>(value);
+		writeFReg(inst.rd, f);
+		break;
+	}
 	case Instruction::EBREAK: {
 		halted = true;
 		break;
