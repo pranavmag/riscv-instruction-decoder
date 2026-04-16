@@ -82,6 +82,12 @@ int main() {
 			else if (inst.type == InstructionType::FPR4) {
 				std::cout << instructionToString(inst.name) << " f" << inst.rd << ", f" << inst.rs1 << ", f" << inst.rs2 << ", f" << inst.rs3 << '\n';
 			}
+			else if (inst.type == InstructionType::FPCONVINT) {
+				std::cout << instructionToString(inst.name) << " x" << inst.rd << ", f" << inst.rs1 << ", " << inst.imm << '\n';
+			}
+			else if (inst.type == InstructionType::INTCONVFP) {
+				std::cout << instructionToString(inst.name) << " f" << inst.rd << ", x" << inst.rs1 << ", " << inst.imm << '\n';
+			}
 			else {
 				std::cout << instructionToString(inst.name) << '\n';
 			}

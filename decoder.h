@@ -4,7 +4,7 @@
 #include <cstdint>
 
 enum class InstructionType {
-	I, R, S, SHIFT, B, J, U, LOAD, JALR, FPL, FPS, FPA, FPR1, FMINMAX, FPR4, FPCONVINT, INTCONVFP, ENVIRONMENT, UNKNOWN
+	I, R, S, SHIFT, B, J, U, LOAD, JALR, FPL, FPS, FPA, FPR1, FMINMAX, FPR4, FPCONVINT, INTCONVFP, FCOMP, ENVIRONMENT, UNKNOWN
 };
 
 enum class Instruction {
@@ -35,6 +35,7 @@ enum class Instruction {
     FSW,
     // FPA
     FADDS, FMULS, FSUBS, FDIVS,
+    FSGNJS, FSGNJNS, FSGNJXS,
     // FP With One Register
     FSQRT,
     // FMINMAX
@@ -42,9 +43,12 @@ enum class Instruction {
     // FP R-4 Type
     FMADDS, FMSUBS, FNMSUBS, FNMADDS,
     // FP to Int Reg
-    FCVTWS,
+    FCVTWS, FCVTWUS, FMVXW,
+    FCLASSS,
     // Int Reg to FP
-    FCVTSW,
+    FCVTSW, FCVTSWU, FMVWX,
+    // FP Comparison Instructions
+    FEQS, FLTS, FLES,
     // Environment
     ECALL, EBREAK,
     // Unknown

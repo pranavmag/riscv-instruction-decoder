@@ -426,6 +426,131 @@ void Core::execute(const DecodedInstruction& inst, Memory& mem) {
 		writeFReg(inst.rd, f);
 		break;
 	}
+	case::Instruction::FCVTWUS: {
+		float f = readFReg(inst.rs1);
+		uint32_t value = static_cast<uint32_t>(f);
+		writeReg(inst.rd, value);
+		break;
+	}
+	case::Instruction::FCVTSWU: {
+		uint32_t value = readReg(inst.rs1);
+		float f = static_cast<float>(value);
+		writeFReg(inst.rd, f);
+		break;
+	}
+	case::Instruction::FSGNJS: {
+		float rs1 = readFReg(inst.rs1);
+		float rs2 = readFReg(inst.rs2);
+		uint32_t bits1{};
+		uint32_t bits2{};
+
+		std::memcpy(&bits1, &rs1, sizeof(bits1));
+		std::memcpy(&bits2, &rs2, sizeof(bits2));
+
+		uint32_t result = (bits2 & 0x80000000) | (bits1 & 0x7FFFFFFF);
+
+		float f{};
+		std::memcpy(&f, &result, sizeof(f));
+
+		writeFReg(inst.rd, f);
+		break;
+	}
+	case::Instruction::FSGNJNS: {
+		float rs1 = readFReg(inst.rs1);
+		float rs2 = readFReg(inst.rs2);
+		uint32_t bits1{};
+		uint32_t bits2{};
+
+		std::memcpy(&bits1, &rs1, sizeof(bits1));
+		std::memcpy(&bits2, &rs2, sizeof(bits2));
+
+		uint32_t result = (bits2 ^ 0x80000000) | (bits1 & 0x7FFFFFFF);
+
+		float f{};
+		std::memcpy(&f, &result, sizeof(f));
+
+		writeFReg(inst.rd, f);
+		break;
+	}
+	case::Instruction::FSGNJXS: {
+		float rs1 = readFReg(inst.rs1);
+		float rs2 = readFReg(inst.rs2);
+		uint32_t bits1{};
+		uint32_t bits2{};
+
+		std::memcpy(&bits1, &rs1, sizeof(bits1));
+		std::memcpy(&bits2, &rs2, sizeof(bits2));
+
+		uint32_t result = ((bits2 ^ bits1) & 0x80000000) | (bits1 & 0x7FFFFFFF);
+
+		float f{};
+		std::memcpy(&f, &result, sizeof(f));
+
+		writeFReg(inst.rd, f);
+		break;
+	}
+	case::Instruction::FMVXW: {
+		float rs1 = readFReg(inst.rs1);
+		uint32_t bits{};
+
+		std::memcpy(&bits, &rs1, sizeof(bits));
+
+		writeReg(inst.rd, bits);
+		break;
+	}
+	case::Instruction::FMVWX: {
+		uint32_t rs1 = readReg(inst.rs1);
+		float bits{};
+
+		std::memcpy(&bits, &rs1, sizeof(bits));
+
+		writeFReg(inst.rd, bits);
+		break;
+	}
+	case::Instruction::FEQS: {
+		float rs1 = readFReg(inst.rs1);
+		float rs2 = readFReg(inst.rs2);
+		bool eq = rs1 == rs2;
+
+		writeReg(inst.rd, static_cast<uint32_t>(eq));
+		break;
+	}
+	case::Instruction::FLTS: {
+		float rs1 = readFReg(inst.rs1);
+		float rs2 = readFReg(inst.rs2);
+		bool eq = rs1 < rs2;
+
+		writeReg(inst.rd, static_cast<uint32_t>(eq));
+		break;
+	}
+	case::Instruction::FLES: {
+		float rs1 = readFReg(inst.rs1);
+		float rs2 = readFReg(inst.rs2);
+		bool eq = rs1 <= rs2;
+
+		writeReg(inst.rd, static_cast<uint32_t>(eq));
+		break;
+	}
+	case::Instruction::FCLASSS: {
+		float f = readFReg(inst.rs1);
+		uint32_t bits{};
+		std::memcpy(&bits, &f, sizeof(bits));
+		bool negative = bits & 0x80000000;
+
+		uint32_t mask = 0;
+		if (std::isinf(f) && negative)                              mask |= (1 << 0);
+		if (std::isnormal(f) && negative)                           mask |= (1 << 1);
+		if (std::fpclassify(f) == FP_SUBNORMAL && negative)         mask |= (1 << 2);
+		if (f == 0.0f && negative)                                  mask |= (1 << 3);
+		if (f == 0.0f && !negative)                                 mask |= (1 << 4);
+		if (std::fpclassify(f) == FP_SUBNORMAL && !negative)        mask |= (1 << 5);
+		if (std::isnormal(f) && !negative)                          mask |= (1 << 6);
+		if (std::isinf(f) && !negative)                             mask |= (1 << 7);
+		if (std::isnan(f))                                          mask |= (1 << 9);
+
+		writeReg(inst.rd, mask);
+		break;
+	}
 	case Instruction::EBREAK: {
 		halted = true;
 		break;

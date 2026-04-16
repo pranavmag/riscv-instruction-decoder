@@ -225,6 +225,9 @@ std::string instructionToString(Instruction inst) {
 	case Instruction::FMULS: return "fmul.s";
 	case Instruction::FSUBS: return "fsub.s";
 	case Instruction::FDIVS: return "fdiv.s";
+	case Instruction::FSGNJS: return "fsgnj.s";
+	case Instruction::FSGNJNS: return "fsgnjn.s";
+	case Instruction::FSGNJXS: return "fsgnjx.s";
 
 		// FP With One Register
 	case Instruction::FSQRT: return "fsqrt";
@@ -241,9 +244,19 @@ std::string instructionToString(Instruction inst) {
 
 		// FP REG to Int Reg
 	case Instruction::FCVTWS: return "fcvt.w.s";
+	case Instruction::FCVTWUS: return "fcvt.wu.s";
+	case Instruction::FMVXW: return "fmv.x.w";
+	case Instruction::FCLASSS: return "fclass.s";
 
 		// Int Reg to FP Reg
 	case Instruction::FCVTSW: return "fcvt.s.w";
+	case Instruction::FCVTSWU: return "fcvt.s.wu";
+	case Instruction::FMVWX: return "fmv.w.x";
+
+		// FP Comparison Instructions
+	case Instruction::FEQS: return "feq.s";
+	case Instruction::FLTS: return "flt.s";
+	case Instruction::FLES: return "fle.s";
 
 		// System
 	case Instruction::ECALL:  return "ecall";
@@ -682,16 +695,110 @@ DecodedInstruction decodeInstruction(uint32_t value) {
 		inst.fmt = getFmt(value);
 	}
 	else if (opcode == 0x53 && funct5 == 0x18) {
-		inst.name = Instruction::FCVTWS;
-		inst.type = InstructionType::FPCONVINT;
+		inst.rs2 = getRs2(value);
+
+		if (inst.rs2 == 0x0) {
+			inst.name = Instruction::FCVTWS;
+			inst.type = InstructionType::FPCONVINT;
+			inst.rs1 = getRs1(value);
+			inst.rd = getRd(value);
+			inst.fmt = getFmt(value);
+		}
+		else if (inst.rs2 == 0x1) {
+			inst.name = Instruction::FCVTWUS;
+			inst.type = InstructionType::FPCONVINT;
+			inst.rs1 = getRs1(value);
+			inst.rd = getRd(value);
+			inst.fmt = getFmt(value);
+		}
+	}
+	else if (opcode == 0x53 && funct5 == 0x1A) {
+		inst.rs2 = getRs2(value);
+
+		if (inst.rs2 == 0x0) {
+			inst.name = Instruction::FCVTSW;
+			inst.type = InstructionType::INTCONVFP;
+			inst.rs1 = getRs1(value);
+			inst.rd = getRd(value);
+			inst.fmt = getFmt(value);
+		}
+		else if (inst.rs2 == 0x1) {
+			inst.name = Instruction::FCVTSWU;
+			inst.type = InstructionType::INTCONVFP;
+			inst.rs1 = getRs1(value);
+			inst.rd = getRd(value);
+			inst.fmt = getFmt(value);
+		}
+	}
+	else if (opcode == 0x53 && funct5 == 0x4 && rm == 0x0) {
+		inst.name = Instruction::FSGNJS;
+		inst.type = InstructionType::FPA;
 		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
 		inst.rd = getRd(value);
 		inst.fmt = getFmt(value);
 	}
-	else if (opcode == 0x53 && funct5 == 0x1A) {
-		inst.name = Instruction::FCVTSW;
+	else if (opcode == 0x53 && funct5 == 0x4 && rm == 0x1) {
+		inst.name = Instruction::FSGNJNS;
+		inst.type = InstructionType::FPA;
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+		inst.rd = getRd(value);
+		inst.fmt = getFmt(value);
+	}
+	else if (opcode == 0x53 && funct5 == 0x4 && rm == 0x2) {
+		inst.name = Instruction::FSGNJXS;
+		inst.type = InstructionType::FPA;
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+		inst.rd = getRd(value);
+		inst.fmt = getFmt(value);
+	}
+	else if (opcode == 0x53 && funct5 == 0x1C) {
+		inst.name = Instruction::FMVXW;
+		inst.type = InstructionType::FPCONVINT;
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+		inst.rd = getRd(value);
+		inst.fmt = getFmt(value);
+	}
+	else if (opcode == 0x53 && funct5 == 0x1E) {
+		inst.name = Instruction::FMVWX;
 		inst.type = InstructionType::INTCONVFP;
 		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+		inst.rd = getRd(value);
+		inst.fmt = getFmt(value);
+	}
+	else if (opcode == 0x53 && funct5 == 0x14 && rm == 0x2) {
+		inst.name = Instruction::FEQS;
+		inst.type = InstructionType::FCOMP;
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+		inst.rd = getRd(value);
+		inst.fmt = getFmt(value);
+	}
+	else if (opcode == 0x53 && funct5 == 0x14 && rm == 0x1) {
+		inst.name = Instruction::FLTS;
+		inst.type = InstructionType::FCOMP;
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+		inst.rd = getRd(value);
+		inst.fmt = getFmt(value);
+	}
+	else if (opcode == 0x53 && funct5 == 0x14 && rm == 0x0) {
+		inst.name = Instruction::FLES;
+		inst.type = InstructionType::FCOMP;
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
+		inst.rd = getRd(value);
+		inst.fmt = getFmt(value);
+	}
+	else if (opcode == 0x53 && funct5 == 0x1C && rm == 0x1) {
+		inst.name = Instruction::FCLASSS;
+		inst.type = InstructionType::FPCONVINT;
+		inst.rs1 = getRs1(value);
+		inst.rs2 = getRs2(value);
 		inst.rd = getRd(value);
 		inst.fmt = getFmt(value);
 	}

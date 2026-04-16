@@ -20,6 +20,8 @@ studying Computer Architecture, Operating Systems, and Systems Programming.
 
 \- Instruction execution for arithmetic and logic instructions
 
+\- F-extension instructions for floating points
+
 
 
 \## Build
@@ -41,7 +43,8 @@ g++ main.cpp decoder.cpp interpreter.cpp -o riscv-emulator
 - [x] Load and run RISC-V binary programs (.bin file loading)
 - [x] Disassembler mode (decode and print instructions)
 - [x] Manual input interpreter mode
-- [ ] Run a non-trivial program (Fibonacci)
+- [x] Run a non-trivial program (Fibonacci)
+- [x] Implement F-Extension
 - [ ] RISC-V toolchain integration (compile and run real programs)
 - [ ] ELF file loading (future)
 - [ ] Multi-core simulation (future)
