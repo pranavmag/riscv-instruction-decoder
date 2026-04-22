@@ -53,6 +53,8 @@ struct EX_MEM {
 	uint32_t aluResult{};
 	float aluFResult{};
 	uint32_t rs2Value{};
+	bool takeBranch{ false };
+	uint32_t branchTarget{};
 	bool bubble{ true };
 };
 

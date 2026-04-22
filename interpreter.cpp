@@ -605,7 +605,7 @@ void Core::decodeStage(Memory& mem) {
 
 void Core::executeStage(Memory& mem) {
 	if (id_ex_reg.bubble) {
-		next_id_ex_reg.bubble = true;
+		next_ex_mem_reg.bubble = true;
 		return;
 	}
 
@@ -613,6 +613,152 @@ void Core::executeStage(Memory& mem) {
 
 	uint32_t aluResult{};
 	float aluFResult{};
+
+	switch (inst.name) {
+	case Instruction::ADDI: {
+		aluResult = id_ex_reg.rs1Value + inst.imm;
+		break;
+	}
+	case Instruction::ANDI: {
+		aluResult = id_ex_reg.rs1Value & inst.imm;
+		break;
+	}
+	case Instruction::ORI: {
+		aluResult = id_ex_reg.rs1Value | inst.imm;
+		break;
+	}
+	case Instruction::XORI: {
+		aluResult = id_ex_reg.rs1Value ^ inst.imm;
+		break;
+	}
+	case Instruction::SLTI: {
+		aluResult = static_cast<int32_t>(id_ex_reg.rs1Value) < inst.imm ? 1 : 0;
+		break;
+	}
+	case Instruction::SLTIU: {
+		aluResult = (id_ex_reg.rs1Value) < static_cast<uint32_t>(inst.imm) ? 1 : 0;
+		break;
+	}
+	case Instruction::SLLI: {
+		aluResult = id_ex_reg.rs1Value << inst.shamt;
+		break;
+	}
+	case Instruction::SRLI: {
+		aluResult = id_ex_reg.rs1Value >> inst.shamt;
+		break;
+	}
+	case Instruction::SRAI: {
+		aluResult = static_cast<uint32_t>(static_cast<int32_t>(id_ex_reg.rs1Value) >> inst.shamt);
+		break;
+	}
+	case Instruction::ADD: {
+		aluResult = id_ex_reg.rs1Value + id_ex_reg.rs2Value;
+		break;
+	}
+	case Instruction::SUB: {
+		aluResult = id_ex_reg.rs1Value - id_ex_reg.rs2Value;
+		break;
+	}
+	case Instruction::AND: {
+		aluResult = id_ex_reg.rs1Value & id_ex_reg.rs2Value;
+		break;
+	}
+	case Instruction::OR: {
+		aluResult = id_ex_reg.rs1Value | id_ex_reg.rs2Value;
+		break;
+	}
+	case Instruction::XOR: {
+		aluResult = id_ex_reg.rs1Value ^ id_ex_reg.rs2Value;
+		break;
+	}
+	case Instruction::SLL: {
+		aluResult = id_ex_reg.rs1Value << id_ex_reg.rs2Value;
+		break;
+	}
+	case Instruction::SRL: {
+		aluResult = id_ex_reg.rs1Value >> id_ex_reg.rs2Value;
+		break;
+	}
+	case Instruction::SRA: {
+		aluResult = static_cast<uint32_t>(static_cast<int32_t>(id_ex_reg.rs1Value) >> id_ex_reg.rs2Value);
+		break;
+	}
+	case Instruction::SLT: {
+		aluResult = static_cast<int32_t>(id_ex_reg.rs1Value) < static_cast<int32_t>(id_ex_reg.rs2Value) ? 1 : 0;
+		break;
+	}
+	case Instruction::SLTU: {
+		aluResult = id_ex_reg.rs1Value < id_ex_reg.rs2Value ? 1 : 0;
+		break;
+	}
+	case Instruction::BEQ: {
+		if (id_ex_reg.rs1Value == id_ex_reg.rs2Value) {
+			next_ex_mem_reg.takeBranch = true;
+			next_ex_mem_reg.branchTarget = id_ex_reg.pc + inst.imm;
+		}
+		break;
+	}
+	case Instruction::BNE: {
+		if (id_ex_reg.rs1Value != id_ex_reg.rs2Value) {
+			next_ex_mem_reg.takeBranch = true;
+			next_ex_mem_reg.branchTarget = id_ex_reg.pc + inst.imm;
+		}
+		break;
+	}
+	case Instruction::BLT: {
+		if (static_cast<int32_t>(id_ex_reg.rs1Value) < static_cast<int32_t>(id_ex_reg.rs2Value)) {
+			next_ex_mem_reg.takeBranch = true;
+			next_ex_mem_reg.branchTarget = id_ex_reg.pc + inst.imm;
+		}
+		break;
+	}
+	case Instruction::BLTU: {
+		if (id_ex_reg.rs1Value < id_ex_reg.rs2Value) {
+			next_ex_mem_reg.takeBranch = true;
+			next_ex_mem_reg.branchTarget = id_ex_reg.pc + inst.imm;
+		}
+		break;
+	}
+	case Instruction::BGE: {
+		if (static_cast<int32_t>(id_ex_reg.rs1Value) >= static_cast<int32_t>(id_ex_reg.rs2Value)) {
+			next_ex_mem_reg.takeBranch = true;
+			next_ex_mem_reg.branchTarget = id_ex_reg.pc + inst.imm;
+		}
+		break;
+	}
+	case Instruction::BGEU: {
+		if (id_ex_reg.rs1Value >= id_ex_reg.rs2Value) {
+			next_ex_mem_reg.takeBranch = true;
+			next_ex_mem_reg.branchTarget = id_ex_reg.pc + inst.imm;
+		}
+		break;
+	}
+	case Instruction::JAL: {
+		next_ex_mem_reg.takeBranch = true;
+		next_ex_mem_reg.branchTarget = id_ex_reg.pc + inst.imm;
+		aluResult = id_ex_reg.pc + 4;
+		break;
+	}
+	case Instruction::JALR: {
+		next_ex_mem_reg.takeBranch = true;
+		next_ex_mem_reg.branchTarget = (id_ex_reg.rs1Value + inst.imm) & 0xFFFFFFFE;
+		aluResult = id_ex_reg.pc + 4;
+		break;
+	}
+	case Instruction::LB:
+	case Instruction::LBU:
+	case Instruction::LH:
+	case Instruction::LHU:
+	case Instruction::LW: 
+		aluResult = id_ex_reg.rs1Value + inst.imm;
+		break;
+	case Instruction::SB:
+	case Instruction::SH:
+	case Instruction::SW:
+		aluResult = id_ex_reg.rs1Value + inst.imm;
+		break;
+
+	}
 
 
 }
