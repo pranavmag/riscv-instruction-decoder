@@ -758,8 +758,363 @@ void Core::executeStage(Memory& mem) {
 		aluResult = id_ex_reg.rs1Value + inst.imm;
 		break;
 
+	case Instruction::AUIPC: {
+		aluResult = id_ex_reg.pc + inst.imm;
+		break;
+	}
+	case Instruction::LUI: {
+		aluResult = inst.imm;
+		break;
+	}
+	case Instruction::MUL: {
+		aluResult = id_ex_reg.rs1Value * id_ex_reg.rs2Value;
+		break;
+	}
+	case Instruction::MULH: {
+		int64_t result = int64_t((int32_t)id_ex_reg.rs1Value) * int64_t((int32_t)id_ex_reg.rs2Value);
+		aluResult = result >> 32;
+		break;
+	}
+	case Instruction::MULHU: {
+		uint64_t result = uint64_t((uint32_t)id_ex_reg.rs1Value) * uint64_t((uint32_t)id_ex_reg.rs2Value);
+		aluResult = result >> 32;
+		break;
+	}
+	case Instruction::MULHSU: {
+		int64_t result = int64_t((int32_t)id_ex_reg.rs1Value) * int64_t((uint32_t)id_ex_reg.rs2Value);
+		aluResult = result >> 32;
+		break;
+	}
+	case Instruction::DIV: {
+		int32_t dividend = (int32_t)id_ex_reg.rs1Value;
+		int32_t divisor = (int32_t)id_ex_reg.rs2Value;
+		if (divisor == 0) {
+			aluResult = -1;
+		}
+		else if (dividend == INT32_MIN && divisor == -1) {
+			aluResult = INT32_MIN;
+		}
+		else {
+			aluResult = dividend / divisor;
+		}
+		break;
+	}
+	case Instruction::DIVU: {
+		uint32_t dividend = id_ex_reg.rs1Value;
+		uint32_t divisor = id_ex_reg.rs2Value;
+		aluResult = divisor == 0 ? -1 : (dividend / divisor);
+		break;
+	}
+	case Instruction::REM: {
+		int32_t dividend = (int32_t)id_ex_reg.rs1Value;
+		int32_t divisor = (int32_t)id_ex_reg.rs2Value;
+		if (divisor == 0) {
+			aluResult = dividend;
+		}
+		else if (dividend == INT32_MIN && divisor == -1) {
+			aluResult = 0;
+		}
+		else {
+			aluResult = dividend % divisor;
+		}
+		break;
+	}
+	case Instruction::REMU: {
+		uint32_t dividend = id_ex_reg.rs1Value;
+		uint32_t divisor = id_ex_reg.rs2Value;
+		aluResult = divisor == 0 ? dividend : (dividend % divisor);
+		break;
+	}
+	case Instruction::FLW: {
+		aluResult = id_ex_reg.rs1Value + inst.imm;
+		break;
+	}
+	case Instruction::FSW: {
+		aluResult = id_ex_reg.rs1Value + inst.imm;
+		break;
+	}
+	case::Instruction::FADDS: {
+		aluFResult = id_ex_reg.rs1FValue + id_ex_reg.rs2FValue;
+		break;
+	}
+	case::Instruction::FMULS: {
+		aluFResult = id_ex_reg.rs1FValue * id_ex_reg.rs2FValue;
+		break;
+	}
+	case::Instruction::FSUBS: {
+		aluFResult = id_ex_reg.rs1FValue - id_ex_reg.rs2FValue;
+		break;
+	}
+	case::Instruction::FDIVS: {
+		aluFResult = id_ex_reg.rs1FValue / id_ex_reg.rs2FValue;
+		break;
+	}
+	case::Instruction::FSQRT: {
+		float value = id_ex_reg.rs1FValue;
+		aluFResult = std::sqrtf(value);
+		break;
+	}
+	case::Instruction::FMIN: {
+		float value1 = id_ex_reg.rs1FValue;
+		float value2 = id_ex_reg.rs2FValue;
+		aluFResult = std::fmin(value1, value2);
+		break;
+	}
+	case::Instruction::FMAX: {
+		float value1 = id_ex_reg.rs1FValue;
+		float value2 = id_ex_reg.rs2FValue;
+		aluFResult = std::fmax(value1, value2);
+		break;
+	}
+	case::Instruction::FMADDS: {
+		float rs1 = id_ex_reg.rs1FValue;
+		float rs2 = id_ex_reg.rs2FValue;
+		float rs3 = id_ex_reg.rs3FValue;
+
+		aluFResult = std::fmaf(rs1, rs2, rs3);
+		break;
+	}
+	case::Instruction::FMSUBS: {
+		float rs1 = id_ex_reg.rs1FValue;
+		float rs2 = id_ex_reg.rs2FValue;
+		float rs3 = id_ex_reg.rs3FValue;
+
+		aluFResult = std::fmaf(rs1, rs2, -rs3);
+		break;
+	}
+	case::Instruction::FNMSUBS: {
+		float rs1 = id_ex_reg.rs1FValue;
+		float rs2 = id_ex_reg.rs2FValue;
+		float rs3 = id_ex_reg.rs3FValue;
+
+		aluFResult = std::fmaf(-rs1, rs2, rs3);
+		break;
+	}
+	case::Instruction::FNMADDS: {
+		float rs1 = id_ex_reg.rs1FValue;
+		float rs2 = id_ex_reg.rs2FValue;
+		float rs3 = id_ex_reg.rs3FValue;
+
+		aluFResult = std::fmaf(-rs1, rs2, -rs3);
+		break;
+	}
+	case::Instruction::FCVTWS: {
+		float f = id_ex_reg.rs1FValue;
+		aluResult = static_cast<int32_t>(f);
+		break;
+	}
+	case::Instruction::FCVTSW: {
+		int32_t value = id_ex_reg.rs1Value;
+		aluFResult = static_cast<float>(value);
+		break;
+	}
+	case::Instruction::FCVTWUS: {
+		float f = id_ex_reg.rs1FValue;
+		aluResult = static_cast<uint32_t>(f);
+		break;
+	}
+	case::Instruction::FCVTSWU: {
+		uint32_t value = id_ex_reg.rs1Value;
+		aluFResult = static_cast<float>(value);
+		break;
+	}
+	case::Instruction::FSGNJS: {
+		float rs1 = id_ex_reg.rs1FValue;
+		float rs2 = id_ex_reg.rs2FValue;
+		uint32_t bits1{};
+		uint32_t bits2{};
+
+		std::memcpy(&bits1, &rs1, sizeof(bits1));
+		std::memcpy(&bits2, &rs2, sizeof(bits2));
+
+		uint32_t result = (bits2 & 0x80000000) | (bits1 & 0x7FFFFFFF);
+
+		std::memcpy(&aluFResult, &result, sizeof(aluFResult));
+		break;
+	}
+	case::Instruction::FSGNJNS: {
+		float rs1 = id_ex_reg.rs1FValue;
+		float rs2 = id_ex_reg.rs2FValue;
+		uint32_t bits1{};
+		uint32_t bits2{};
+
+		std::memcpy(&bits1, &rs1, sizeof(bits1));
+		std::memcpy(&bits2, &rs2, sizeof(bits2));
+
+		uint32_t result = (bits2 ^ 0x80000000) | (bits1 & 0x7FFFFFFF);
+
+		std::memcpy(&aluFResult, &result, sizeof(aluFResult));
+
+		break;
+	}
+	case::Instruction::FSGNJXS: {
+		float rs1 = id_ex_reg.rs1FValue;
+		float rs2 = id_ex_reg.rs2FValue;
+		uint32_t bits1{};
+		uint32_t bits2{};
+
+		std::memcpy(&bits1, &rs1, sizeof(bits1));
+		std::memcpy(&bits2, &rs2, sizeof(bits2));
+
+		uint32_t result = ((bits2 ^ bits1) & 0x80000000) | (bits1 & 0x7FFFFFFF);
+
+		std::memcpy(&aluFResult, &result, sizeof(aluFResult));
+
+		break;
+	}
+	case::Instruction::FMVXW: {
+		float rs1 = id_ex_reg.rs1FValue;
+
+		std::memcpy(&aluResult, &rs1, sizeof(aluResult));
+
+		break;
+	}
+	case::Instruction::FMVWX: {
+		uint32_t rs1 = id_ex_reg.rs1Value;
+
+		std::memcpy(&aluFResult, &rs1, sizeof(aluFResult));
+
+		break;
+	}
+	case::Instruction::FEQS: {
+		float rs1 = id_ex_reg.rs1FValue;
+		float rs2 = id_ex_reg.rs2FValue;
+		bool eq = rs1 == rs2;
+
+		aluResult = static_cast<uint32_t>(eq);
+		break;
+	}
+	case::Instruction::FLTS: {
+		float rs1 = id_ex_reg.rs1FValue;
+		float rs2 = id_ex_reg.rs2FValue;
+		bool eq = rs1 < rs2;
+
+		aluResult = static_cast<uint32_t>(eq);
+		break;
+	}
+	case::Instruction::FLES: {
+		float rs1 = id_ex_reg.rs1FValue;
+		float rs2 = id_ex_reg.rs2FValue;
+		bool eq = rs1 <= rs2;
+
+		aluResult = static_cast<uint32_t>(eq);
+		break;
+	}
+	case::Instruction::FCLASSS: {
+		float f = id_ex_reg.rs1FValue;
+		uint32_t bits{};
+		std::memcpy(&bits, &f, sizeof(bits));
+		bool negative = bits & 0x80000000;
+
+
+		if (std::isinf(f) && negative)                              aluResult |= (1 << 0);
+		if (std::isnormal(f) && negative)                           aluResult |= (1 << 1);
+		if (std::fpclassify(f) == FP_SUBNORMAL && negative)         aluResult |= (1 << 2);
+		if (f == 0.0f && negative)                                  aluResult |= (1 << 3);
+		if (f == 0.0f && !negative)                                 aluResult |= (1 << 4);
+		if (std::fpclassify(f) == FP_SUBNORMAL && !negative)        aluResult |= (1 << 5);
+		if (std::isnormal(f) && !negative)                          aluResult |= (1 << 6);
+		if (std::isinf(f) && !negative)                             aluResult |= (1 << 7);
+		if (std::isnan(f))                                          aluResult |= (1 << 9);
+
+		break;
+	}
+	case Instruction::EBREAK: {
+		halted = true;
+		return;
+	}
+	case Instruction::ECALL: {
+		halted = true;
+		return;
+	}
+	case Instruction::UNKNOWN: {
+		std::cout << "Unknown Instruction at PC: " << pc << '\n';
+		halted = true;
+		return;
+	}
+	}
+	
+	next_ex_mem_reg.inst = inst;
+	next_ex_mem_reg.pc = id_ex_reg.pc;
+	next_ex_mem_reg.aluResult = aluResult;
+	next_ex_mem_reg.aluFResult = aluFResult;
+	next_ex_mem_reg.rs2Value = id_ex_reg.rs2Value;
+	next_ex_mem_reg.rs2FValue = id_ex_reg.rs2FValue;
+	next_ex_mem_reg.bubble = false;
+}
+
+void Core::memoryStage(Memory& mem) {
+	if (ex_mem_reg.bubble) {
+		next_mem_wb_reg.bubble = true;
+		return;
 	}
 
+	DecodedInstruction inst = ex_mem_reg.inst;
+
+	uint32_t memRead{};
+
+	switch (inst.name) {
+	case::Instruction::LB: {
+		memRead = mem.readByte(ex_mem_reg.aluResult);
+
+		if (memRead & 0x80) {
+			memRead = memRead | 0xFFFFFF00;
+		}
+	}
+	}
+
+	switch (inst.name) {
+	case Instruction::LB: {
+		uint32_t memory = (mem.readByte(readReg(inst.rs1) + inst.imm));
+		if (memory & 0x80) {
+			memory = memory | 0xFFFFFF00;
+		}
+		writeReg(inst.rd, memory);
+		break;
+	}
+	case Instruction::LBU: {
+		uint32_t memory = mem.readByte(readReg(inst.rs1) + inst.imm);
+		writeReg(inst.rd, memory);
+		break;
+	}
+
+	case Instruction::LH: {
+		uint32_t memory = mem.readHalfWord(readReg(inst.rs1) + inst.imm);
+		if (memory & 0x8000) {
+			memory = memory | 0xFFFF0000;
+		}
+		writeReg(inst.rd, memory);
+		break;
+	}
+	case Instruction::LHU: {
+		uint32_t memory = mem.readHalfWord(readReg(inst.rs1) + inst.imm);
+		writeReg(inst.rd, memory);
+		break;
+	}
+	case Instruction::LW: {
+		uint32_t memory = mem.readWord(readReg(inst.rs1) + inst.imm);
+		writeReg(inst.rd, memory);
+		break;
+	}
+	case Instruction::SB: {
+		uint32_t address = readReg(inst.rs1) + inst.imm;
+		uint32_t value = readReg(inst.rs2);
+		mem.writeByte(address, value);
+		break;
+	}
+	case Instruction::SH: {
+		uint32_t address = readReg(inst.rs1) + inst.imm;
+		uint32_t value = readReg(inst.rs2);
+		mem.writeHalfWord(address, value);
+		break;
+	}
+	case Instruction::SW: {
+		uint32_t address = readReg(inst.rs1) + inst.imm;
+		uint32_t value = readReg(inst.rs2);
+		mem.writeWord(address, value);
+		break;
+	}
+	}
 
 }
 

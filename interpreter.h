@@ -53,6 +53,7 @@ struct EX_MEM {
 	uint32_t aluResult{};
 	float aluFResult{};
 	uint32_t rs2Value{};
+	float rs2FValue{};
 	bool takeBranch{ false };
 	uint32_t branchTarget{};
 	bool bubble{ true };
@@ -97,6 +98,8 @@ struct Core {
 	void decodeStage(Memory& mem);
 
 	void executeStage(Memory& mem);
+
+	void memoryStage(Memory& mem);
 
 	void execute(const DecodedInstruction& inst, Memory& mem);
 
