@@ -1033,7 +1033,13 @@ void Core::executeStage(Memory& mem) {
 		return;
 	}
 	}
-	
+
+	if (next_ex_mem_reg.takeBranch) {
+		pc = next_ex_mem_reg.branchTarget;
+		next_if_id_reg = IF_ID{};
+		next_id_ex_reg = ID_EX{};
+	}
+
 	next_ex_mem_reg.inst = inst;
 	next_ex_mem_reg.pc = id_ex_reg.pc;
 	next_ex_mem_reg.aluResult = aluResult;
@@ -1052,6 +1058,7 @@ void Core::memoryStage(Memory& mem) {
 	DecodedInstruction inst = ex_mem_reg.inst;
 
 	uint32_t memRead{};
+	float memFRead{};
 
 	switch (inst.name) {
 	case::Instruction::LB: {
@@ -1060,62 +1067,87 @@ void Core::memoryStage(Memory& mem) {
 		if (memRead & 0x80) {
 			memRead = memRead | 0xFFFFFF00;
 		}
-	}
-	}
 
-	switch (inst.name) {
-	case Instruction::LB: {
-		uint32_t memory = (mem.readByte(readReg(inst.rs1) + inst.imm));
-		if (memory & 0x80) {
-			memory = memory | 0xFFFFFF00;
-		}
-		writeReg(inst.rd, memory);
 		break;
 	}
 	case Instruction::LBU: {
-		uint32_t memory = mem.readByte(readReg(inst.rs1) + inst.imm);
-		writeReg(inst.rd, memory);
+		memRead = mem.readByte(ex_mem_reg.aluResult);
 		break;
 	}
-
 	case Instruction::LH: {
-		uint32_t memory = mem.readHalfWord(readReg(inst.rs1) + inst.imm);
-		if (memory & 0x8000) {
-			memory = memory | 0xFFFF0000;
+		memRead = mem.readHalfWord(ex_mem_reg.aluResult);
+
+		if (memRead & 0x8000) {
+			memRead = memRead | 0xFFFF0000;
 		}
-		writeReg(inst.rd, memory);
+
 		break;
 	}
 	case Instruction::LHU: {
-		uint32_t memory = mem.readHalfWord(readReg(inst.rs1) + inst.imm);
-		writeReg(inst.rd, memory);
+		memRead = mem.readHalfWord(ex_mem_reg.aluResult);
 		break;
 	}
 	case Instruction::LW: {
-		uint32_t memory = mem.readWord(readReg(inst.rs1) + inst.imm);
-		writeReg(inst.rd, memory);
+		memRead = mem.readWord(ex_mem_reg.aluResult);
 		break;
 	}
 	case Instruction::SB: {
-		uint32_t address = readReg(inst.rs1) + inst.imm;
-		uint32_t value = readReg(inst.rs2);
+		uint32_t address = ex_mem_reg.aluResult;
+		uint32_t value = ex_mem_reg.rs2Value;
 		mem.writeByte(address, value);
 		break;
 	}
 	case Instruction::SH: {
-		uint32_t address = readReg(inst.rs1) + inst.imm;
-		uint32_t value = readReg(inst.rs2);
+		uint32_t address = ex_mem_reg.aluResult;
+		uint32_t value = ex_mem_reg.rs2Value;
 		mem.writeHalfWord(address, value);
 		break;
 	}
 	case Instruction::SW: {
-		uint32_t address = readReg(inst.rs1) + inst.imm;
-		uint32_t value = readReg(inst.rs2);
+		uint32_t address = ex_mem_reg.aluResult;
+		uint32_t value = ex_mem_reg.rs2Value;
 		mem.writeWord(address, value);
 		break;
 	}
+	case Instruction::FLW: {
+		uint32_t memory = mem.readWord(ex_mem_reg.aluResult);
+		std::memcpy(&memFRead, &memory, sizeof(memFRead));
+		break;
+	}
+	case Instruction::FSW: {
+		uint32_t address = ex_mem_reg.aluResult;
+		float f = ex_mem_reg.rs2FValue;
+		uint32_t value{};
+		std::memcpy(&value, &f, sizeof(value));
+		mem.writeWord(address, value);
+		break;
+	}
+	default:
+		break;
 	}
 
+	next_mem_wb_reg.inst = inst;
+	next_mem_wb_reg.memRead = memRead;
+	next_mem_wb_reg.memFRead = memFRead;
+	next_mem_wb_reg.aluResult = ex_mem_reg.aluResult;
+	next_mem_wb_reg.aluFResult = ex_mem_reg.aluFResult;
+	next_mem_wb_reg.bubble = false;
+}
+
+void Core::writeBackStage() {
+	if (mem_wb_reg.bubble) {
+		return;
+	}
+
+	DecodedInstruction inst = mem_wb_reg.inst;
+
+	if (inst.type == InstructionType::S || inst.type == InstructionType::FPS || inst.type == InstructionType::B ||
+		inst.type == InstructionType::ENVIRONMENT || inst.type == InstructionType::UNKNOWN) {
+		return;
+	}
+
+	bool isFloat = (inst.type == InstructionType::FPL || inst.type == InstructionType::FPA || inst.type == InstructionType::FPR1 ||
+		inst.type == InstructionType::FMINMAX || inst.type == InstructionType::FPR4 || inst.type == InstructionType::INTCONVFP);
 }
 
 void Core::run(Memory& mem) {
