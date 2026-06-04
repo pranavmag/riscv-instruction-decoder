@@ -13,7 +13,7 @@ class Parser {
 	ErrorHandling& error_;
 
 public: 
-	Parser(std::vector<Token> tok, ErrorHandling& error) : tokens_(tok), error_(error) {}
+	Parser(const std::vector<Token> tok, ErrorHandling& error) : tokens_(std::move(tok)), error_(error) {}
 
 	std::vector<std::unique_ptr<Stmt>> parseCode();
 

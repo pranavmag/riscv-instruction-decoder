@@ -38,12 +38,12 @@ std::vector<Token> Scanner::scanTokens() {
 }
 
 void Scanner::addToken(TokenType type) {
-	std::string text = source_.substr(start_, current_ - start_);
+	std::string text{ source_.substr(start_, current_ - start_) };
 	tokens_.emplace_back(type, text, std::monostate{}, line_);
 }
 
 void Scanner::addToken(TokenType type, Literal literal) {
-	std::string lexeme = source_.substr(start_, current_ - start_);
+	std::string lexeme{ source_.substr(start_, current_ - start_) };
 	tokens_.emplace_back(type, std::move(lexeme), literal, line_);
 }
 
@@ -132,7 +132,7 @@ void Scanner::string() {
 	}
 	advance();
 
-	std::string stringLiteral = source_.substr(start_ + 1, current_ - start_ - 2);
+	std::string stringLiteral{ source_.substr(start_ + 1, current_ - start_ - 2) };
 	addToken(TokenType::STRING, stringLiteral);
 }
 
@@ -148,7 +148,7 @@ void Scanner::number() {
 		}
 	}
 
-	std::string numberLiteral = source_.substr(start_, current_ - start_);
+	std::string numberLiteral{ source_.substr(start_, current_ - start_) };
 	addToken(TokenType::NUMBER, numberLiteral);
 }
 
@@ -169,7 +169,7 @@ void Scanner::identifier() {
 		advance();
 	}
 
-	std::string text = source_.substr(start_, current_ - start_);
+	std::string text{ source_.substr(start_, current_ - start_) };
 	auto word = keywords.find(text);
 	
 	if (word != keywords.end()) {

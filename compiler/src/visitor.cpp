@@ -1,24 +1,29 @@
 #include "visitor.h"
 
 // Expressions
-void BinaryOpNode::accept(ExprVisitor& v) {
+int BinaryOpNode::accept(ExprVisitor& v) {
 	v.visitBinaryOpNode(*this);
+	return 0;
 }
 
-void UnaryOpNode::accept(ExprVisitor& v) {
+int UnaryOpNode::accept(ExprVisitor& v) {
 	v.visitUnaryOpNode(*this);
+	return 0;
 }
 
-void LiteralNode::accept(ExprVisitor& v) {
+int LiteralNode::accept(ExprVisitor& v) {
 	v.visitLiteralNode(*this);
+	return 0;
 }
 
-void IdentifierNode::accept(ExprVisitor& v) {
+int IdentifierNode::accept(ExprVisitor& v) {
 	v.visitIdentifierNode(*this);
+	return 0;
 }
 
-void FuncCallNode::accept(ExprVisitor& v) {
+int FuncCallNode::accept(ExprVisitor& v) {
 	v.visitFuncCallNode(*this);
+	return 0;
 }
 
 

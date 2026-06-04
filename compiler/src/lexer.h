@@ -2,6 +2,7 @@
 
 #include "shared/error.h"
 #include <string>
+#include <string_view>
 #include <variant>
 #include <vector>
 #include <unordered_map>
@@ -89,7 +90,7 @@ inline std::string tokenTypeToString(TokenType type) {
 
 class Scanner {
 private:
-	std::string source_;
+	std::string_view source_;
 	std::vector<Token> tokens_;
 	int start_ = 0;
 	int current_ = 0;
@@ -97,7 +98,7 @@ private:
 	ErrorHandling& error_;
 
 public:
-	Scanner(std::string source, ErrorHandling& error) : source_(std::move(source)), error_(error) {
+	Scanner(std::string_view source, ErrorHandling& error) : source_(source), error_(error) {
 		std::vector<Token> tokens{};
 	}
 

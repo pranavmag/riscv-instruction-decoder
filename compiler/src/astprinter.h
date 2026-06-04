@@ -28,14 +28,14 @@ public:
         return 0;
     }
 
-    Literal visitLiteralNode(LiteralNode& n) override {
+    int visitLiteralNode(LiteralNode& n) override {
         print("Literal");
         return 0;
     }
 
-    Token visitIdentifierNode(IdentifierNode& n) override {
+    int visitIdentifierNode(IdentifierNode& n) override {
         print("Identifier: " + n.name.lexeme);
-        return n.name;
+        return 0;
     }
 
     int visitFuncCallNode(FuncCallNode& n) override {

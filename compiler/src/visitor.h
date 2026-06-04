@@ -9,8 +9,8 @@ struct ExprVisitor {
 
 	virtual int visitBinaryOpNode(BinaryOpNode& n) = 0;
 	virtual int visitUnaryOpNode(UnaryOpNode& n) = 0;
-	virtual Literal visitLiteralNode(LiteralNode& n) = 0;
-	virtual Token visitIdentifierNode(IdentifierNode& n) = 0;
+	virtual int visitLiteralNode(LiteralNode& n) = 0;
+	virtual int visitIdentifierNode(IdentifierNode& n) = 0;
 	virtual int visitFuncCallNode(FuncCallNode& n) = 0;
 
 };

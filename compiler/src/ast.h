@@ -12,7 +12,7 @@ struct StmtVisitor;
 struct Expr {
 	virtual ~Expr() = default;
 
-	virtual void accept(ExprVisitor& v) = 0;
+	virtual int accept(ExprVisitor& v) = 0;
 };
 
 // a + b, a * b, a == b, etc.
@@ -26,7 +26,7 @@ struct BinaryOpNode : Expr {
 		: left(std::move(left)), right(std::move(right)), op(std::move(op)) {
 	}
 
-	void accept(ExprVisitor& v) override;
+	int accept(ExprVisitor& v) override;
 };
 
 // !x, -x, etc.
@@ -38,7 +38,7 @@ struct UnaryOpNode : Expr {
 		: op(std::move(op)), operand(std::move(operand)) {
 	}
 
-	void accept(ExprVisitor& v) override;
+	int accept(ExprVisitor& v) override;
 };
 
 // 90, 3.14, "hello world", etc
@@ -47,7 +47,7 @@ struct LiteralNode : Expr {
 
 	LiteralNode(Literal value) : value(std::move(value)) {}
 
-	void accept(ExprVisitor& v) override;
+	int accept(ExprVisitor& v) override;
 };
 
 // variable name
@@ -56,7 +56,7 @@ struct IdentifierNode : Expr {
 
 	IdentifierNode(Token name) : name(std::move(name)) {}
 
-	void accept(ExprVisitor& v) override;
+	int accept(ExprVisitor& v) override;
 };
 
 // func(arg1, arg2, arg3, ...)
@@ -68,7 +68,7 @@ struct FuncCallNode : Expr {
 		: funcName(std::move(funcName)), args(std::move(args)) {
 	}
 
-	void accept(ExprVisitor& v) override;
+	int accept(ExprVisitor& v) override;
 };
 
 

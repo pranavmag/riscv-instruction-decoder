@@ -1,6 +1,6 @@
 add_executable(compiler
     src/main.cpp
- "src/lexer.cpp" "src/lexer.h" "src/visitor.h" "src/parser.cpp" "src/parser.h" "src/visitor.cpp" "src/astprinter.h")
+ "src/lexer.cpp" "src/lexer.h" "src/visitor.h" "src/parser.cpp" "src/parser.h" "src/visitor.cpp" "src/astprinter.h" "src/irgenerator.h" "src/irgenerator.cpp")
 
 target_include_directories(compiler PRIVATE src)
 

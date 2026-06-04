@@ -2,6 +2,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "astprinter.h"
+#include "irgenerator.h"
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -9,7 +10,7 @@
 
 ErrorHandling errorHandler;
 
-void run(const std::string& source, ErrorHandling& errorHandler);
+void run(std::string_view source, ErrorHandling& errorHandler);
 
 void runFile(const std::string& filePath, ErrorHandling& errHandler) {
 	std::ifstream file(filePath);
@@ -38,17 +39,19 @@ void runPrompt(ErrorHandling& errHandler) {
 	}
 }
 
-void run(const std::string& source, ErrorHandling& errorhandling) {
+void run(std::string_view source, ErrorHandling& errorhandling) {
 	Scanner scanner(source, errorhandling);
 	std::vector<Token> tokens = scanner.scanTokens();
 
 	Parser parser(tokens, errorhandling);
 	std::vector<std::unique_ptr<Stmt>> code = parser.parseCode();
 
-	ASTPrinter printer;
+	IRGenerator irGen;
 	for (auto& stmt : code) {
-		stmt->accept(printer);
+		stmt->accept(irGen);
 	}
+
+	irGen.printIR();
 }
 
 

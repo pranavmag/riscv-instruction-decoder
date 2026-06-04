@@ -1,0 +1,31 @@
+# pragma once 
+
+#include <vector>
+
+// struct of quads - destination register, source register 1 and 2 (operands), and operator
+// struct of operand
+// enum of operandType
+// enum of RISC-V Assembly mappings
+
+enum class IROp {
+	ADD, SUB, MUL, DIV
+};
+
+enum class OperandType {
+	VREG,
+	IMM,
+	LABEL,
+	NONE
+};
+
+struct Operand {
+	OperandType type{ OperandType::NONE };
+	int value{};
+};
+
+struct Quad {
+	Operand dest;
+	Operand src1;
+	Operand src2;
+	IROp op;
+};
