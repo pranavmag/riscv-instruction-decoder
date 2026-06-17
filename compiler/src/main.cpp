@@ -47,11 +47,17 @@ void run(std::string_view source, ErrorHandling& errorhandling) {
 	std::vector<std::unique_ptr<Stmt>> code = parser.parseCode();
 
 	IRGenerator irGen;
-	for (auto& stmt : code) {
-		stmt->accept(irGen);
-	}
+	try {
+		for (auto& stmt : code) {
+			stmt->accept(irGen);
+		}
 
-	irGen.printIR();
+		irGen.printIR();
+	}
+	catch (const std::runtime_error& e) {
+		std::cerr << e.what() << '\n';
+		errorhandling.hasError = true;
+	}
 }
 
 

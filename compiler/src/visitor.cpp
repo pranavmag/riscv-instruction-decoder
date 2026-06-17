@@ -2,28 +2,23 @@
 
 // Expressions
 int BinaryOpNode::accept(ExprVisitor& v) {
-	v.visitBinaryOpNode(*this);
-	return 0;
+	return v.visitBinaryOpNode(*this);
 }
 
 int UnaryOpNode::accept(ExprVisitor& v) {
-	v.visitUnaryOpNode(*this);
-	return 0;
+	return v.visitUnaryOpNode(*this);
 }
 
 int LiteralNode::accept(ExprVisitor& v) {
-	v.visitLiteralNode(*this);
-	return 0;
+	return v.visitLiteralNode(*this);
 }
 
 int IdentifierNode::accept(ExprVisitor& v) {
-	v.visitIdentifierNode(*this);
-	return 0;
+	return v.visitIdentifierNode(*this);
 }
 
 int FuncCallNode::accept(ExprVisitor& v) {
-	v.visitFuncCallNode(*this);
-	return 0;
+	return v.visitFuncCallNode(*this);
 }
 
 

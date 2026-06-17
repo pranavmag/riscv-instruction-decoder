@@ -4,6 +4,7 @@
 #include "visitor.h"
 #include "shared/ir.h"
 #include <vector>
+#include <unordered_map>
 
 class IRGenerator : public ExprVisitor, public StmtVisitor {
 private:
@@ -13,6 +14,8 @@ private:
 
 	int allocateVReg();
 	void emit(Quad& quad);
+
+	std::unordered_map<std::string, int> symbolTable_;
 
 public:
 	IROp mapOperator(TokenType type);

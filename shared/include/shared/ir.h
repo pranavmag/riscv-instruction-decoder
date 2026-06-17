@@ -8,7 +8,10 @@
 // enum of RISC-V Assembly mappings
 
 enum class IROp {
-	ADD, SUB, MUL, DIV
+	ADD, SUB, MUL, DIV, REM, 
+	NEG, NOT,
+	LOAD_IMM,
+	UNKNOWN
 };
 
 enum class OperandType {

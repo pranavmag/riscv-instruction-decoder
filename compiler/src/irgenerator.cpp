@@ -1,6 +1,7 @@
 #include "irgenerator.h"
 #include <vector>
 #include <iostream>
+#include <stdexcept>
 
 int IRGenerator::allocateVReg() {
 	return vreg_counter_++;
@@ -16,6 +17,9 @@ IROp IRGenerator::mapOperator(TokenType type) {
 	case TokenType::MINUS: return IROp::SUB;
 	case TokenType::STAR: return IROp::MUL;
 	case TokenType::SLASH: return IROp::DIV;
+	case TokenType::PERCENT: return IROp::REM;
+	default: return IROp::UNKNOWN;
+
 
 
 	}
@@ -42,6 +46,13 @@ std::string IRGenerator::operatorToString(IROp operand) {
 	case IROp::SUB: return "SUB";
 	case IROp::MUL: return "MUL";
 	case IROp::DIV: return "DIV";
+	case IROp::REM: return "REM";
+	case IROp::NOT: return "NOT";
+	case IROp::NEG: return "NEG";
+	case IROp::LOAD_IMM: return "LOAD_IMM";
+	default: return "Unknown OP";
+
+
 	}
 }
 
@@ -60,8 +71,8 @@ int IRGenerator::visitBinaryOpNode(BinaryOpNode& n) {
 
 	Quad quad;
 	quad.dest = { OperandType::VREG, destReg };
-	quad.src1 = { OperandType::IMM, leftReg };
-	quad.src2 = { OperandType::IMM, rightReg };
+	quad.src1 = { OperandType::VREG, leftReg };
+	quad.src2 = { OperandType::VREG, rightReg };
 	quad.op = op;
 
 	emit(quad);
@@ -70,24 +81,68 @@ int IRGenerator::visitBinaryOpNode(BinaryOpNode& n) {
 }
 
 int IRGenerator::visitUnaryOpNode(UnaryOpNode& n) {
-	//// op, operand
-	//// !, -
+	// op, operand
+	// !, -
 
-	//int childReg = n.operand->accept(*this);
+	int childReg = n.operand->accept(*this);
 
-	//if (n.op.type == TokenType::EXCLAMATION) {
+	int destReg = allocateVReg();
 
-	//}
+	IROp op;
+	if (n.op.type == TokenType::MINUS) {
+		op = IROp::NEG;
+	}
+	else if (n.op.type == TokenType::EXCLAMATION) {
+		op = IROp::NOT;
+	}
+	else {
+		throw std::runtime_error("Unknown Operator");
+	}
 
-	return 0;
+	Quad quad;
+	quad.dest = { OperandType::VREG, destReg };
+	quad.src1 = { OperandType::VREG, childReg };
+	quad.src2 = { OperandType::NONE, 0 };
+	quad.op = op;
+
+	emit(quad);
+
+	return destReg;
 }
 
 int IRGenerator::visitLiteralNode(LiteralNode& n) {
-	return 0;
+	int destReg = allocateVReg();
+	int literal = 0;
+
+	if (std::holds_alternative<int>(n.value)) {
+		literal = std::get<int>(n.value);
+	}
+	else if (std::holds_alternative<float>(n.value)) {
+		literal = static_cast<int>(std::get<float>(n.value));
+	}
+	else if (std::holds_alternative<std::string>(n.value)) {
+		literal = std::stoi(std::get<std::string>(n.value));
+	}
+
+	Quad quad;
+	quad.dest = { OperandType::VREG, destReg };
+	quad.src1 = { OperandType::IMM, literal };
+	quad.src2 = { OperandType::NONE, 0 };
+	quad.op = IROp::LOAD_IMM;
+
+	emit(quad);
+
+	return destReg;
 }
 
 int IRGenerator::visitIdentifierNode(IdentifierNode& n) {
-	return 0;
+	std::string varName = n.name.lexeme;
+
+	if (symbolTable_.find(varName) == symbolTable_.end()) {
+		throw std::runtime_error("Error in visitIdentifierNode");
+	}
+
+	return symbolTable_[varName];
 }
 
 int IRGenerator::visitFuncCallNode(FuncCallNode& n) {
