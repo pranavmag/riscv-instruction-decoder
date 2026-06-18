@@ -50,6 +50,12 @@ std::string IRGenerator::operatorToString(IROp operand) {
 	case IROp::NOT: return "NOT";
 	case IROp::NEG: return "NEG";
 	case IROp::LOAD_IMM: return "LOAD_IMM";
+	case IROp::PARAM: return "PARAM";
+	case IROp::CALL: return "CALL";
+	case IROp::RET: return "RET";
+
+
+
 	default: return "Unknown OP";
 
 
@@ -146,19 +152,84 @@ int IRGenerator::visitIdentifierNode(IdentifierNode& n) {
 }
 
 int IRGenerator::visitFuncCallNode(FuncCallNode& n) {
-	return 0;
+	std::vector<int> arguments;
+	for (auto& arg : n.args) {
+		int param = arg->accept(*this);
+		arguments.push_back(param);
+	}
+
+	for (auto& arg : arguments) {
+		Quad paramQuad;
+		paramQuad.dest = { OperandType::NONE, 0};
+		paramQuad.src1 = { OperandType::VREG, arg };
+		paramQuad.src2 = { OperandType::NONE, 0 };
+		paramQuad.op = IROp::PARAM;
+		emit(paramQuad);
+	}
+
+	int destReg = allocateVReg();
+
+	// v4 CALL 3
+
+	Quad callQuad;
+	callQuad.dest = { OperandType::VREG, destReg };
+	callQuad.src1 = { OperandType::IMM, static_cast<int>(arguments.size())};
+	callQuad.src2 = { OperandType::NONE, 0 };
+	callQuad.op = IROp::CALL;
+
+	emit(callQuad);
+
+	return destReg;
 }
 
 void IRGenerator::visitVarDecl(VarDeclStmt& n) {
+	std::string varName = n.name.lexeme;
 
+	// int x;
+	// int x = 3;
+
+	int initReg{};
+	if (n.initializer) {
+		initReg = n.initializer->accept(*this);
+	}
+
+	symbolTable_[varName] = initReg;
 }
 
 void IRGenerator::visitRet(RetStmt& n) {
+	int retReg{};
 
+	if (n.ret) {
+		retReg = n.ret->accept(*this);
+	}
+
+	Quad quad;
+	quad.dest = { OperandType::VREG, retReg };
+	quad.src1 = { OperandType::NONE, 0 };
+	quad.src2 = { OperandType::NONE, 0 };
+	quad.op = IROp::RET;
+
+	emit(quad);
 }
 
 void IRGenerator::visitIf(IfStmt& n) {
+	/*
+		some code
 
+		if (x == y) {
+			code
+		}
+		else {
+			code
+		}
+
+		code
+	
+	
+	
+	
+	
+	*/
 }
 
 void IRGenerator::visitWhile(WhileStmt& n) {

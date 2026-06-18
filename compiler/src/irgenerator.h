@@ -9,6 +9,7 @@
 class IRGenerator : public ExprVisitor, public StmtVisitor {
 private:
 	int vreg_counter_ = 1;
+	int block_counter_ = 1;
 
 	std::vector<Quad> instructions_;
 
@@ -16,6 +17,16 @@ private:
 	void emit(Quad& quad);
 
 	std::unordered_map<std::string, int> symbolTable_;
+
+	std::vector<std::unique_ptr<BasicBlock>> cfg;
+
+	BasicBlock* createBlock() {
+		auto newBlock = std::make_unique<BasicBlock>();
+		newBlock->id = block_counter_++;
+		BasicBlock* currentBlock = newBlock.get();
+		cfg.push_back(std::move(newBlock));
+		return currentBlock;
+	}
 
 public:
 	IROp mapOperator(TokenType type);

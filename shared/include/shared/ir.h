@@ -11,7 +11,9 @@ enum class IROp {
 	ADD, SUB, MUL, DIV, REM, 
 	NEG, NOT,
 	LOAD_IMM,
-	UNKNOWN
+	PARAM, CALL,
+	RET,
+	UNKNOWN,
 };
 
 enum class OperandType {
@@ -31,4 +33,12 @@ struct Quad {
 	Operand src1;
 	Operand src2;
 	IROp op;
+};
+
+struct BasicBlock {
+	int id;
+	std::vector<Quad> instructions;
+
+	BasicBlock* trueEdge{ nullptr };
+	BasicBlock* falseEdge{ nullptr };
 };

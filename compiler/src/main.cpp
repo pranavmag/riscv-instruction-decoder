@@ -10,7 +10,7 @@
 
 ErrorHandling errorHandler;
 
-void run(std::string_view source, ErrorHandling& errorHandler);
+void run(std::string_view source, ErrorHandling& errorHandler, IRGenerator& irGen);
 
 void runFile(const std::string& filePath, ErrorHandling& errHandler) {
 	std::ifstream file(filePath);
@@ -19,9 +19,11 @@ void runFile(const std::string& filePath, ErrorHandling& errHandler) {
 		std::exit(1);
 	}
 
+	IRGenerator irGen;
+
 	std::ostringstream buffer;
 	buffer << file.rdbuf();
-	run(buffer.str(), errHandler);
+	run(buffer.str(), errHandler, irGen);
 	if (errHandler.hasError) {
 		std::exit(2);
 	}
@@ -29,24 +31,24 @@ void runFile(const std::string& filePath, ErrorHandling& errHandler) {
 
 void runPrompt(ErrorHandling& errHandler) {
 	std::string userInput{};
+	IRGenerator irGen;
 	while (true) {
 		std::cout << "> ";
 		if (!std::getline(std::cin >> std::ws, userInput)) {
 			break;
 		}
-		run(userInput, errHandler);
+		run(userInput, errHandler, irGen);
 		errHandler.hasError = false;
 	}
 }
 
-void run(std::string_view source, ErrorHandling& errorhandling) {
+void run(std::string_view source, ErrorHandling& errorhandling, IRGenerator& irGen) {
 	Scanner scanner(source, errorhandling);
 	std::vector<Token> tokens = scanner.scanTokens();
 
 	Parser parser(tokens, errorhandling);
 	std::vector<std::unique_ptr<Stmt>> code = parser.parseCode();
 
-	IRGenerator irGen;
 	try {
 		for (auto& stmt : code) {
 			stmt->accept(irGen);
