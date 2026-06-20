@@ -103,7 +103,7 @@ public:
 	}
 
 	bool isAtEnd() const {
-		return current_ >= source_.size();
+		return static_cast<std::string_view::size_type>(current_) >= source_.size();
 	}
 
 	char advance() {
@@ -119,7 +119,7 @@ public:
 	}
 
 	char peekNext() const {
-		if (current_ + 1 >= source_.size()) {
+		if (static_cast<std::string_view::size_type>(current_) + 1 >= source_.size()) {
 			return '\0';
 		}
 		return source_[current_ + 1];

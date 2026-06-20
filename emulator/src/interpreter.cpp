@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <cmath>
+#include <cstring>
 #include <fstream>
 
 void Memory::loadProgram(const std::string& fileName) {
@@ -128,6 +129,8 @@ void Core::fetchStage(Memory& mem) {
 }
 
 void Core::decodeStage(Memory& mem) {
+	(void)mem;
+
 	if (if_id_reg.bubble) {
 		next_id_ex_reg.bubble = true;
 		return;
@@ -170,6 +173,8 @@ void Core::decodeStage(Memory& mem) {
 }
 
 void Core::executeStage(Memory& mem) {
+	(void)mem;
+	
 	if (id_ex_reg.bubble) {
 		next_ex_mem_reg.bubble = true;
 		return;

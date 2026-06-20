@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <cstdint>
+#include <cstring>
 
 std::string getBinary() {
 	std::cout << "Enter a 32 bit binary string: ";
